@@ -2,13 +2,13 @@ from ortools.constraint_solver import pywrapcp
 from ortools.constraint_solver import routing_enums_pb2
 import networkx as nx
 
-
 def print_solution(vehicle_count, manager, routing, solution):
     """Prints solution on console."""
     print(f"Objective: {solution.ObjectiveValue()}")
     
     print(f"")
     max_route_distance = 0
+    total_distance = 0
     for vehicle_id in range(vehicle_count):
         index = routing.Start(vehicle_id)
         plan_output = f"Route for vehicle {vehicle_id}:\n"
@@ -22,13 +22,14 @@ def print_solution(vehicle_count, manager, routing, solution):
             )
         plan_output += f"{manager.IndexToNode(index)}\n"
         plan_output += f"Distance of the route: {route_distance}m\n"
+        total_distance += route_distance
         print(plan_output)
         max_route_distance = max(route_distance, max_route_distance)
     print(f"Maximum of the route distances: {max_route_distance}m")
+    print(f"Total distance of all routes: {total_distance}m")
 
 # generates a list of the paths from the solution
-def extract_solution(vehicle_count, manager, routing, solution):
-    """Extracts solution from the solver."""
+def extract_solution(vehicle_count, manager, routing, solution, nodes):
     paths = []
     for vehicle_id in range(vehicle_count):
         index = routing.Start(vehicle_id)
@@ -38,7 +39,8 @@ def extract_solution(vehicle_count, manager, routing, solution):
             previous_index = index
             index = solution.Value(routing.NextVar(index))
         path.append(manager.IndexToNode(index))
-        paths.append(path)
+        paths.append(list(map(lambda x: nodes[x], path)))
+    return paths
 
 def solve_tsp(G: nx.DiGraph, end_node_id: str, starting_node_ids: list[str]):
     nodes = list(G.nodes())
@@ -83,6 +85,10 @@ def solve_tsp(G: nx.DiGraph, end_node_id: str, starting_node_ids: list[str]):
         dimension_name,
     )
 
+    distance_dimension = routing.GetDimensionOrDie(dimension_name)
+    distance_dimension.SetGlobalSpanCostCoefficient(100)
+
     solution = routing.SolveWithParameters(search_parameters)
-    print_solution(len(starting_node_ids), manager, routing, solution)
+    
+    return extract_solution(len(starting_node_ids), manager, routing, solution, nodes)
 

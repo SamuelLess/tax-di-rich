@@ -190,7 +190,7 @@ def customer_end_pos(customer):
 
 # Euclidean distance
 def dist(pos1, pos2):
-    return math.sqrt( (pos1[0] - pos2[0])**2 + (pos1[1] - pos1[1])**2 )
+    return math.sqrt( (pos1[0] - pos2[0])**2 + (pos1[1] - pos1[1])**2 ) * 1000
 
 def cost(pos1, pos2, speed = AVG_SPEED):
     return dist(pos1, pos2) / speed
@@ -206,7 +206,7 @@ def add_customer_nodes(G, customers):
     for customer in customers:
         G.add_node(
             customer["id"],
-            pos=(customer["coordY"], customer["coordX"]),
+            pos=(customer["coordX"], customer["coordY"]),
         )
 
 def add_customer_edges(G, customers):
@@ -220,17 +220,18 @@ def add_customer_edges(G, customers):
                 )
 
 def add_vehicles(G: nx.DiGraph, vehicles : list[Vehicle], customers: list[Customer]):
-    customer_nodes = filter(lambda x: x != SINK_NODE_ID, copy.copy(list(G.nodes())))
+    customer_nodes = list(filter(lambda x: x != SINK_NODE_ID, copy.copy(list(G.nodes()))))
     starting_nodes = []
     # Nodes from starting positions
     for vehicle in vehicles:
         if vehicle["isAvailable"] or True:
-            vehicle_position = (vehicle["coordY"], vehicle["coordX"])
+            vehicle_position = (vehicle["coordX"], vehicle["coordY"])
             starting_nodes.append(vehicle["id"])
             G.add_node(
                     vehicle["id"],
                     pos=vehicle_position
                 ),
+            print(len(customer_nodes))
             for customer_id in customer_nodes:
                 customer = next((x for x in customers if x["id"] == customer_id), None)
                 starting_cost = cost_for_customer(vehicle_position, customer)
@@ -240,31 +241,44 @@ def add_vehicles(G: nx.DiGraph, vehicles : list[Vehicle], customers: list[Custom
     return starting_nodes
 
 def add_sink(G):
-    G.add_node(SINK_NODE_ID, pos=(48.13828, 11.619596))
+    G.add_node(SINK_NODE_ID, pos=(48.138288, 11.619596))
     for node in G.nodes():
         G.add_edge(node, "sink_node", weight = 0)
+
+def clean_solution(solution):
+    return list(map(lambda x: x[1:-1], solution))
 
 def build_graph(scenario):
     customers, vehicles = scenario["customers"], scenario["vehicles"]
 
+    customers = customers
+    vehicles = vehicles
     G = nx.DiGraph()
     
     add_customer_nodes(G, customers)
     add_customer_edges(G, customers)
-    #add_sink(G)
+    add_sink(G)
     starting_nodes = add_vehicles(G, vehicles, customers)
     print("Graph generated")
 
-    #solver.solve_tsp(G, SINK_NODE_ID, starting_nodes)
+    solution = solver.solve_tsp(G, SINK_NODE_ID, starting_nodes)
+
+    solution = clean_solution(solution)
 
     pos = nx.get_node_attributes(G, 'pos')
  
 
-    nx.draw_networkx_nodes(G, pos, node_size=300, nodelist=list(filter(lambda x: x not in starting_nodes, G.nodes())))
-    nx.draw_networkx_nodes(G, pos, node_size=300, nodelist=starting_nodes, node_color="red")
+    nx.draw_networkx_nodes(G, pos, node_size=300, nodelist=list(filter(lambda x: x not in starting_nodes , G.nodes())))
 
+    colors = ["red", "blue", "green", "yellow", "purple", "orange", "pink", "brown", "black", "gray"]
+
+    for color, path in enumerate(solution):
+        # draw the edges of the path
+        edgelist = [(path[i], path[i+1]) for i in range(len(path) - 1)]
+        nx.draw_networkx_edges(G, pos, edgelist=edgelist, width=2, edge_color=colors[color])
     # edges
-    nx.draw_networkx_edges(G, pos, width=1)
+    edges = G.edges(data=True)
+    nx.draw_networkx_edges(G, pos, edgelist=edges, alpha=0.01)
 
     # node labels
     #nx.draw_networkx_labels(G, pos, font_size=20, font_family="sans-serif")
@@ -273,27 +287,13 @@ def build_graph(scenario):
     #print(edge_labels)
     #nx.draw_networkx_edge_labels(G, pos, edge_labels)
 
+    #print(nx.adjecency_matrix(G))
+
     ax = plt.gca()
     ax.margins(0.08)
     plt.axis("off")
     plt.tight_layout()
     plt.show()
-
-def test_solver():
-    G = nx.DiGraph()
-    G.add_node("l")
-    G.add_node("m")
-    G.add_node("r")
-
-    G.add_edge("l", "m", weight=1)
-    G.add_edge("m", "r", weight=1)
-    G.add_edge("r", "l", weight=100)
-    G.add_edge("l", "r", weight=100)
-    G.add_edge("m", "l", weight=1)
-    G.add_edge("r", "m", weight=1)
-
-    solver.solve_tsp(G, "m", ["m", "m"])
-
 
 if __name__ == "__main__":
     #test_solver()
