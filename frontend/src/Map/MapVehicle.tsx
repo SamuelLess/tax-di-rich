@@ -1,4 +1,4 @@
-import { Marker } from "react-leaflet";
+import { Circle, Marker } from "react-leaflet";
 import { Customer, Vehicle } from "./scenario";
 import { LCarIcon } from "./LeafletIcon";
 import { CustomerMarker } from "./Customer";
@@ -52,7 +52,8 @@ export const MapVehicle = ({ vehicle, customer, startRemainingTime }: { vehicle:
 
     return (
         <>
-            <Marker position={[vehicle.coordX, vehicle.coordY]} icon={LCarIcon()} />
+            <Circle center={[vehicle.coordX, vehicle.coordY]} radius={20} fill fillColor="white"/>
+            <Marker position={[vehicle.coordX, vehicle.coordY]} icon={LCarIcon()} zIndexOffset={1}/>
             {showCustomer && <CustomerMarker customer={customer} />}
             <Route path={pickupPath} iconPos={firstPathProgress} color={"#00FF00"} />
             <Route path={dropoffPath} iconPos={secondPathProgress} color={"#FF0000"} />
