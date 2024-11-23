@@ -40,8 +40,10 @@ def main():
     run_scenario(id_sc, speed=SIMULATION_SPEED)
     loop_over_scenario(id_sc)
 
-
-def loop_step(id_sc) -> int:
+def loop_step(id_sc) -> (int, bool, dict):
+    """UPDATED START TIMES
+    id => startRemainingTravelTime
+    """
     sc_data = get_scenario(id_sc)
     solution = create_plan(sc_data)
     print(solution)
@@ -59,9 +61,17 @@ def loop_step(id_sc) -> int:
     print(scenario_status(id_sc))
     print(f"Sending {len(actions)} cars...")
     rsp = send_cars(id_sc, actions)
+    print("IMPORTANT RESPONSE")
     pprint(rsp)
+    update_dict = {}
+    for vh in rsp['updatedVehicles']:
+        print(f"Vehicle {vh['id']} is now moving to customer {vh['customerId']}")
+        v_id = vh['id']
+        remaining_travel_time = vh['remainingTravelTime']
+        update_dict[v_id] = remaining_travel_time
+
     wait_time = time_to_next_change(id_sc)
-    return wait_time
+    return wait_time, len(actions) > 0, update_dict
 
 
 def loop_over_scenario(id_sc):

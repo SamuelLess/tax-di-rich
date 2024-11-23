@@ -1,8 +1,15 @@
 import requests
 from algorithm import create_plan
 
+
 def get_scenarios():
     return requests.get("http://localhost:8080/scenarios").json()
+
+
+def create_scenario(vhs_num, cms_num):
+    return requests.post(
+        f"http://localhost:8080/scenario/create?numberOfVehicles={vhs_num}&numberOfCustomers={cms_num}"
+    ).json()
 
 
 def init_scenario(id_sc):
