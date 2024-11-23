@@ -1,5 +1,5 @@
 import { AreaChart } from '@mantine/charts';
-import { data } from './data';
+// import { data } from './data';
 
 function ForecastGraph() {
   return (
@@ -138,11 +138,13 @@ function ForecastGraph() {
       dataKey="date"
       type="percent"
       series={[
-        { name: 'waiting', color: 'indigo.6' },
-        { name: 'driving', color: 'blue.6' },
-        { name: 'arrived', color: 'teal.6' },
+        { name: 'Graph1', color: 'indigo.6' },
+        { name: 'Graph2', color: 'blue.6' },
+        { name: 'Graph3', color: 'teal.6' },
       ]}
       curveType = "monotone"
     />
   );
 }
+
+export default ForecastGraph;

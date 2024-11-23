@@ -1,6 +1,7 @@
 import { Outlet, createBrowserRouter, createRoutesFromElements, Route } from 'react-router';
 import Navbar from './components/Navbar'
 import Home from './pages/Home';
+import ForecastGraph from '@components/ForecastGraph';
 
 const Layout = () => {
   return (
@@ -15,7 +16,7 @@ const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<Layout />}>
       <Route path={"/"} element={<Home />} />
-      <Route path={"/other"} element={<Home />} />
+      <Route path={"/other"} element={<ForecastGraph />} />
     </Route>,
   ),
 );
