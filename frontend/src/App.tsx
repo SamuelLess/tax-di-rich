@@ -1,14 +1,23 @@
-import './App.css'
-import Map from './Map/Map'
+import { Outlet, createBrowserRouter, createRoutesFromElements, Route } from 'react-router';
+import Navbar from './components/Navbar'
+import Home from './pages/Home';
 
-function App() {
+const Layout = () => {
   return (
-    <>
-      <div style={{ width: "100vw", height: "500px" }}>
-        <Map />
-      </div>
-    </>
+    <div style={{ width: "100vw", height: "100vw", position: "fixed" }}>
+      <Navbar />
+      <Outlet />
+    </div>
   )
-}
+};
 
-export default App
+const router = createBrowserRouter(
+  createRoutesFromElements(
+    <Route path="/" element={<Layout />}>
+      <Route path={"/"} element={<Home />} />
+      <Route path={"/other"} element={<Home />} />
+    </Route>,
+  ),
+);
+
+export default router;

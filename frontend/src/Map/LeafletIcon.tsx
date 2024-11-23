@@ -1,4 +1,4 @@
-import { CarProfile, FlagCheckered } from "@phosphor-icons/react";
+import { Car, FlagCheckered } from "@phosphor-icons/react";
 import { divIcon, PointExpression } from "leaflet";
 import { ReactNode } from "react";
 import { renderToString } from "react-dom/server";
@@ -16,7 +16,7 @@ const LeafletIcon = (icon: ReactNode, anchor: PointExpression) => {
 };
 
 const LCarIcon = () => {
-	return LeafletIcon(<CarProfile size={32} color="#000000" weight="fill" />, [16, 16]);
+	return LeafletIcon(<Car size={32} color="#000000" weight="fill" />, [16, 16]);
 };
 
 const LFlagIcon = () => {

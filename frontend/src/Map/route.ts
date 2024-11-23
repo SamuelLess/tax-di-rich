@@ -1,6 +1,35 @@
 import haversineDistance from "haversine-distance";
 import * as z from "zod";
 
+export const blobSchema = z.object({
+	"customers": z.array(z.object({
+		"awaitingService": z.boolean(),
+		"coordX": z.number(),
+		"coordY": z.number(),
+		"destinationX": z.number(),
+		"destinationY": z.number(),
+		"id": z.string(),
+	})),
+	"endTime": z.null(),
+	"id": z.string(),
+	"startTime": z.string(),
+	"status": z.string(),
+	"vehicles": z.array(z.object({
+		"activeTime": z.number(),
+		"coordX": z.number(),
+		"coordY": z.number(),
+		"customerId": z.string(),
+		"distanceTravelled": z.number(),
+		"id": z.string(),
+		"isAvailable": z.boolean(),
+		"numberOfTrips": z.number(),
+		"remainingTravelTime": z.nullable(z.number()),
+		"vehicleSpeed": z.number()
+	}))
+});
+
+export type IBlob = z.infer<typeof blobSchema>;
+
 export const routeSchema = z.array(
 	z.tuple([z.number(), z.number()])
 );
