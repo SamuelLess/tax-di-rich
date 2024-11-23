@@ -24,15 +24,8 @@ from scenario import (
     run_scenario,
 )
 
+SIMULATION_SPEED = 0.05
 SIMULATION_SPEED = 0.005
-
-sio = socketio.AsyncServer(cors_allowed_origins='*')
-
-def start_web_server():
-    app = web.Application()
-    sio.attach(app)
-    app.add_routes([web.get('/', default_page)])
-    web.run_app(app, port=9090)
 
 
 def main():
@@ -44,36 +37,36 @@ def main():
         print("Please provide a scenario id")
         exit(1)
     run_scenario(id_sc, speed=SIMULATION_SPEED)
-
-    web_thread = threading.Thread(target=start_web_server)
-    web_thread.start()
-
     loop_over_scenario(id_sc)
 
-async def default_page(request):
-    return web.Response(text="The backend for marjapussi is up and running.")
+
+def loop_step(id_sc) -> int:
+    print("THE VHICLE")
+    pprint(get_scenario(id_sc)["vehicles"][0])
+    """TIME OF CURRENT TRIP START FOR EACH CAR UTC"""
+    #vis_scenario(id_sc)
+    print(scenario_status(id_sc))
+    vhs_avail = get_vehicles_available_ids(id_sc)
+    cms_waiting = get_customers_waiting_ids(id_sc)
+    print(f"{vhs_avail=}")
+    print(f"{cms_waiting=}")
+    updates = [
+        (vhs_avail[i], cms_waiting[i])
+        for i in range(min(len(vhs_avail), len(cms_waiting)))
+    ]
+    print(f"Sending {len(updates)} cars...")
+    rsp = send_cars(id_sc, updates)
+    pprint(rsp)
+    wait_time = time_to_next_change(id_sc)
+    return wait_time
+
 
 def loop_over_scenario(id_sc):
     """status is 'CREATED' | 'RUNNING' | 'COMPLETED'"""
     scenario_data = get_scenario(id_sc)
     pprint(scenario_data)
     while scenario_data["status"] != "COMPLETED":
-        pprint(get_scenario(id_sc))
-        sio.start_background_task(sio.emit, 'updates', scenario_status(id_sc))
-        vis_scenario(id_sc)
-        print(scenario_status(id_sc))
-        vhs_avail = get_vehicles_available_ids(id_sc)
-        cms_waiting = get_customers_waiting_ids(id_sc)
-        print(f"{vhs_avail=}")
-        print(f"{cms_waiting=}")
-        updates = [
-            (vhs_avail[i], cms_waiting[i])
-            for i in range(min(len(vhs_avail), len(cms_waiting)))
-        ]
-        print(f"Sending {len(updates)} cars...")
-        rsp = send_cars(id_sc, updates)
-        pprint(rsp)
-        wait_time = time_to_next_change(id_sc)
+        wait_time = loop_step(id_sc)
         print(
             f"Sleeping for {wait_time}*{SIMULATION_SPEED}={wait_time*SIMULATION_SPEED} seconds..."
         )

@@ -1,6 +1,10 @@
 import requests
 from algorithm import create_plan
 
+def get_scenarios():
+    return requests.get("http://localhost:8080/scenarios").json()
+
+
 def init_scenario(id_sc):
     data = get_scenario(id_sc)
     print(data)
