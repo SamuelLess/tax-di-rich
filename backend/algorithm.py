@@ -189,13 +189,13 @@ def customer_end_pos(customer):
 def dist(pos1, pos2):
     return math.sqrt( (pos1[0] - pos2[0])**2 + (pos1[1] - pos1[1])**2 ) * 1000
 
-def cost(pos1, pos2, speed = AVG_SPEED):
+def cost(pos1, pos2, speed):
     return dist(pos1, pos2) / speed
 
 # Cost for doing a request, when the vehicle is still at the previous customer
-def cost_for_customer(current_position, customer):
-    cost_to_next_job = cost(current_position, customer_start_pos(customer))
-    cost_to_finish_job = cost(customer_start_pos(customer), customer_end_pos(customer))
+def cost_for_customer(current_position, customer, speed = AVG_SPEED):
+    cost_to_next_job = cost(current_position, customer_start_pos(customer), speed)
+    cost_to_finish_job = cost(customer_start_pos(customer), customer_end_pos(customer), speed)
     return  cost_to_next_job + cost_to_finish_job
 
 def add_customer_nodes(G, customers):
@@ -232,15 +232,15 @@ def add_vehicles(G: nx.DiGraph, vehicles : list[Vehicle], customers: list[Custom
         if vehicle["isAvailable"]:
             # Taxi can still select from all available customers, no knowledge about speed
             potential_customers = customer_nodes
-            comission_cost = cost_for_customer(vehicle_position, customer)
+            cost_func = lambda customer: cost_for_customer(vehicle_position, customer)
         else:
             # Taxi continues its job and we can account for its speed
             potential_customers = [vehicle["customerId"]]
-            comission_cost = cost_for_customer(vehicle_position, customer, vehicle["vehicleSpeed"])
+            cost_func = lambda customer: cost_for_customer(vehicle_position, customer, vehicle["vehicleSpeed"])
 
         for customer_id in potential_customers:
             customer = next((x for x in customers if x["id"] == customer_id), None)
-            G.add_edge(vehicle["id"], customer_id, weight = comission_cost)
+            G.add_edge(vehicle["id"], customer_id, weight = cost_func(customer))
     return starting_nodes
 
 def add_sink(G):
@@ -271,4 +271,4 @@ def create_plan(scenario, coefficient=10):
 
 if __name__ == "__main__":
     #test_solver()
-    create_plan(example_data)
+    create_plan(example_data, 100)
