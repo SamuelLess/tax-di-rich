@@ -1,9 +1,7 @@
 import { LatLngExpression } from 'leaflet';
-import { MapContainer, Marker, TileLayer } from 'react-leaflet'
+import { MapContainer, TileLayer } from 'react-leaflet'
 import { Scenario } from './scenario';
 import { MapVehicle } from './MapVehicle';
-import { Mark } from '@mantine/core/lib/components';
-import Route from './Route';
 
 const UPDATE_INTERVAL = 200;
 const MUNICH_LATLONG: LatLngExpression = [48.137154, 11.576124];

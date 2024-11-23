@@ -1,12 +1,8 @@
-import { Car, FlagCheckered, UserCircle } from "@phosphor-icons/react";
-import { divIcon, PointExpression } from "leaflet";
-import { ReactNode } from "react";
-import { renderToString } from "react-dom/server";
+import L, { PointExpression } from "leaflet";
 
-const LeafletIcon = (icon: ReactNode, anchor: PointExpression) => {
-	const iconMarkup = renderToString(icon);
-	return divIcon({
-	  html: iconMarkup,
+const LeafletIcon = (url: string, anchor: PointExpression) => {
+	return L.icon({
+	  iconUrl: url,
 	  className: 'custom-icon',
 	  iconSize: [32, 32],
 	  iconAnchor: anchor,
@@ -14,15 +10,15 @@ const LeafletIcon = (icon: ReactNode, anchor: PointExpression) => {
 };
 
 const LCarIcon = () => {
-	return LeafletIcon(<Car size={32} color="#000000" weight="fill" />, [16, 16]);
+	return LeafletIcon("/car.svg", [16, 16]);
 };
 
-const LFlagIcon = () => {
-	return LeafletIcon(<FlagCheckered size={32} color="#000000" weight="fill" />, [5, 28]);
-}
+// const LFlagIcon = () => {
+// 	return LeafletIcon(<FlagCheckered size={32} color="#000000" weight="fill" />, [5, 28]);
+// }
 
 const LCustomerIcon = () => {
-	return LeafletIcon(<UserCircle size={32} color="#000000" weight="fill" />, [5, 28]);
+	return LeafletIcon("/user.svg", [16, 16]);
 }
 
-export { LCarIcon, LFlagIcon, LCustomerIcon };
+export { LCarIcon, LCustomerIcon };

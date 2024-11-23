@@ -77,7 +77,8 @@ const Home = () => {
       setIsConnected(false);
     }
 
-    function updateScenario(updatedScenario) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    function updateScenario(updatedScenario: any) {
       setScenarioState(updatedScenario["data"]);
       setStartRemainingTimes(updatedScenario["start_remaining_time"]);
       setIsLoading(false);

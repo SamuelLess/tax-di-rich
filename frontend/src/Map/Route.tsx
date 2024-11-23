@@ -1,6 +1,5 @@
-import { Fragment, useEffect, useMemo, useState } from 'react';
-import { Marker, Polyline } from 'react-leaflet'
-import { LCarIcon, LFlagIcon } from './LeafletIcon';
+import { useEffect, useMemo, useState } from 'react';
+import { Polyline } from 'react-leaflet'
 import { IRoute, routeSchema, routeLengths, getCoordinateAtPercentage } from './route';
 
 interface IPath {
@@ -48,7 +47,7 @@ const Route = (props: { path: IPath, iconPos: number | null, color: string }) =>
 			routeLengthMap.totalLength,
 			props.iconPos * 100
 		);
-	}	
+	}
 	return (
 		<>
 			{coord ? <Marker position={coord} icon={LCarIcon()} /> : null}
