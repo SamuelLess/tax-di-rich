@@ -10,6 +10,7 @@ import socketio
 import matplotlib.pyplot as plt
 import networkx as nx
 
+from algorithm import create_plan
 from scenario import (
     get_customers,
     get_customers_waiting_ids,
@@ -41,21 +42,23 @@ def main():
 
 
 def loop_step(id_sc) -> int:
-    print("THE VHICLE")
-    pprint(get_scenario(id_sc)["vehicles"][0])
+    sc_data = get_scenario(id_sc)
+    solution = create_plan(sc_data)
+    print(solution)
+    actions = []
+    for vh, plan in zip(sc_data['vehicles'], solution):
+        print(f"Vehicle {vh['id']} -> {plan}")
+        # vehicle available and not moving
+        if vh['isAvailable']:
+            if plan:
+                # send car to customer
+                actions.append((vh['id'], plan[0]))
+
     """TIME OF CURRENT TRIP START FOR EACH CAR UTC"""
     #vis_scenario(id_sc)
     print(scenario_status(id_sc))
-    vhs_avail = get_vehicles_available_ids(id_sc)
-    cms_waiting = get_customers_waiting_ids(id_sc)
-    print(f"{vhs_avail=}")
-    print(f"{cms_waiting=}")
-    updates = [
-        (vhs_avail[i], cms_waiting[i])
-        for i in range(min(len(vhs_avail), len(cms_waiting)))
-    ]
-    print(f"Sending {len(updates)} cars...")
-    rsp = send_cars(id_sc, updates)
+    print(f"Sending {len(actions)} cars...")
+    rsp = send_cars(id_sc, actions)
     pprint(rsp)
     wait_time = time_to_next_change(id_sc)
     return wait_time

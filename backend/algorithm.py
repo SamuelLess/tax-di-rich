@@ -1,8 +1,5 @@
 import networkx as nx
-from scenario import *
-import matplotlib.pyplot as plt
 import math
-import ortools
 import solver
 import copy
 
@@ -254,11 +251,11 @@ def add_sink(G):
 def clean_solution(solution):
     return list(map(lambda x: x[1:-1], solution))
 
-def create_plan(scenario, coefficient):
+def create_plan(scenario, coefficient=10):
     customers, vehicles = scenario["customers"], scenario["vehicles"]
 
     # TODO: Does this belong here?
-    customers = filter(lambda x: x["awaitingService"])
+    customers = list(filter(lambda x: x["awaitingService"], customers))
 
     G = nx.DiGraph()
     
