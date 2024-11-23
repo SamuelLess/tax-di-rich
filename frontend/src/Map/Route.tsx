@@ -51,7 +51,6 @@ const Route = (props: { path: IPath, iconPos: number | null, color: string }) =>
 	}	
 	return (
 		<>
-			{coord && <Marker position={coord} icon={LCarIcon()} />}
 			{route ? <Polyline positions={route} color={props.color} /> : null}
 		</>
 	);

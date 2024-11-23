@@ -3,7 +3,7 @@ from ortools.constraint_solver import routing_enums_pb2
 import networkx as nx
 import math
 
-ACCURACY = 100
+ACCURACY = 10
 
 # def print_solution(vehicle_count, manager, routing, solution):
 #     """Prints solution on console."""
@@ -80,7 +80,7 @@ def solve_tsp(G: nx.DiGraph, end_node_id: str, starting_node_ids: list[str], coe
             return 0
         if not G.has_edge(nodes[from_node], nodes[to_node]):
             return 212345
-        our_weight = round(G.get_edge_data(nodes[from_node], nodes[to_node])['weight'] / ACCURACY)
+        our_weight = round(G.get_edge_data(nodes[from_node], nodes[to_node])['weight'])
         return our_weight
         
 
@@ -97,7 +97,7 @@ def solve_tsp(G: nx.DiGraph, end_node_id: str, starting_node_ids: list[str], coe
         transit_callback_index,
         0,
         # TODO: Do minutes
-        int(12 * 60 * 60 / ACCURACY), # Max time per car is 1 hour
+        int(1 * 60 * 60), # Max time per car is 1 hour
         True,
         dimension_name,
     )

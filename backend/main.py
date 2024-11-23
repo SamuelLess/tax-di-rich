@@ -16,7 +16,7 @@ from scenario import (
     run_scenario,
 )
 
-SIMULATION_SPEED = 0.05
+SIMULATION_SPEED = 0.1
 
 
 def main():
@@ -51,7 +51,7 @@ def loop_step(id_sc) -> (int, bool, dict):
     rsp = send_cars(id_sc, actions)
     update_dict = {}
     update_pos_dict = {}
-    for vh in rsp['updatedVehicles']:
+    for vh in rsp.get('updatedVehicles', []):
         v_id = vh['id']
         remaining_travel_time = vh['remainingTravelTime']
         update_dict[v_id] = remaining_travel_time
