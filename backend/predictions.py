@@ -16,7 +16,7 @@ def get_customer_by_id(customer_id, customers):
 def forecast_stats(scenario, coefficient, speed):
     start = timeit.timeit()
     plans = create_plan(scenario, coefficient, speed)
-    time = timeit.timeit() - start
+    compute_time = timeit.timeit() - start
 
     timeplan = []
     i = 0
@@ -55,9 +55,11 @@ def forecast_stats(scenario, coefficient, speed):
         driving_y.append(driving)
         waiting_y.append(waiting)
 
-    times = []
+    times = [t[0] for t in timeplan]
+    avg_wait_time = sum(times) / len(times)
+    max_wait_time = max(times)
     
-    return x, waiting_y, driving_y, done_y, time
+    return x, waiting_y, driving_y, done_y, avg_wait_time, max_wait_time, compute_time
 
 if __name__ == "__main__":
     print(forecast_stats(example_data, 100, 11.11))

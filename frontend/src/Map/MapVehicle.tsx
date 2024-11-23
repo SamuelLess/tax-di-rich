@@ -10,15 +10,15 @@ export const MapVehicle = ({ vehicle, customer, startRemainingTime }: { vehicle:
     const [progress, setProgress] = useState(0);
 
     const targetProgress = startRemainingTime ? 1 - (vehicle.remainingTravelTime / startRemainingTime) : 0;
-    const clampedProgress = Math.min(1, Math.max(0, progress));
-    console.log("Target Progress", clampedProgress);
+    const clampedProgress = Math.min(1, Math.max(0, targetProgress));
 
     useEffect(() => {
-        const interval = setInterval(() => {
-            setProgress(progress + (targetProgress - progress) * 0.1);
+        console.log("Vehicle rendered");
+        const interval = setInterval(() => {     
+            setProgress(progress + (clampedProgress - progress) * 0.01);
         }, 100);
         return () => clearInterval(interval);
-    },[customer?.id, vehicle.id]);
+    },[]);
 
     if (!customer) {
         return <Marker position={[vehicle.coordX, vehicle.coordY]} icon={LCarIcon()} />;
