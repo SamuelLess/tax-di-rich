@@ -72,6 +72,8 @@ def get_customers_waiting_ids(id_sc):
     return [c["id"] for c in get_customers(id_sc) if not not c["awaitingService"]]
 
 
+
+
 def send_cars(id_sc, vehicles: [(str, str)]):
     # /Scenarios/update_scenario/{scenario_id}
     # PUT

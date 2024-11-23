@@ -2,31 +2,47 @@ from ortools.constraint_solver import pywrapcp
 from ortools.constraint_solver import routing_enums_pb2
 import networkx as nx
 
-def print_solution(vehicle_count, manager, routing, solution):
-    """Prints solution on console."""
-    print(f"Objective: {solution.ObjectiveValue()}")
+# def print_solution(vehicle_count, manager, routing, solution):
+#     """Prints solution on console."""
+#     print(f"Objective: {solution.ObjectiveValue()}")
     
-    print(f"")
-    max_route_distance = 0
-    total_distance = 0
-    for vehicle_id in range(vehicle_count):
-        index = routing.Start(vehicle_id)
-        plan_output = f"Route for vehicle {vehicle_id}:\n"
-        route_distance = 0
-        while not routing.IsEnd(index):
-            plan_output += f" {manager.IndexToNode(index)} -> "
-            previous_index = index
-            index = solution.Value(routing.NextVar(index))
-            route_distance += routing.GetArcCostForVehicle(
-                previous_index, index, vehicle_id
-            )
-        plan_output += f"{manager.IndexToNode(index)}\n"
-        plan_output += f"Distance of the route: {route_distance}m\n"
-        total_distance += route_distance
-        print(plan_output)
-        max_route_distance = max(route_distance, max_route_distance)
-    print(f"Maximum of the route distances: {max_route_distance}m")
-    print(f"Total distance of all routes: {total_distance}m")
+#     print(f"")
+#     max_route_distance = 0
+#     total_distance = 0
+#     for vehicle_id in range(vehicle_count):
+#         index = routing.Start(vehicle_id)
+#         plan_output = f"Route for vehicle {vehicle_id}:\n"
+#         route_distance = 0
+#         while not routing.IsEnd(index):
+#             plan_output += f" {manager.IndexToNode(index)} -> "
+#             previous_index = index
+#             index = solution.Value(routing.NextVar(index))
+#             route_distance += routing.GetArcCostForVehicle(
+#                 previous_index, index, vehicle_id
+#             )
+#         plan_output += f"{manager.IndexToNode(index)}\n"
+#         plan_output += f"Distance of the route: {route_distance}m\n"
+#         total_distance += route_distance
+#         print(plan_output)
+#         max_route_distance = max(route_distance, max_route_distance)
+#     print(f"Maximum of the route distances: {max_route_distance}m")
+#     print(f"Total distance of all routes: {total_distance}m")
+
+# def evaluate_solution(vehicle_count, routing, solution):
+#     max_route_distance = 0
+#     total_distance = 0
+#     for vehicle_id in range(vehicle_count):
+#         index = routing.Start(vehicle_id)
+#         route_distance = 0
+#         while not routing.IsEnd(index):
+#             previous_index = index
+#             index = solution.Value(routing.NextVar(index))
+#             route_distance += routing.GetArcCostForVehicle(
+#                 previous_index, index, vehicle_id
+#             )
+#         total_distance += route_distance
+#         max_route_distance = max(route_distance, max_route_distance)
+#     return max_route_distance, total_distance
 
 # generates a list of the paths from the solution
 def extract_solution(vehicle_count, manager, routing, solution, nodes):

@@ -3,10 +3,11 @@ import Map from '../Map/Map'
 import {socket} from '.././socket';
 
 import React, {useState, useEffect} from 'react';
+import { Scenario } from 'Map/scenario';
 
 const Home = () => {
   const [isConnected, setIsConnected] = useState(socket.connected);
-  const [scenarioState, setScenarioState] = useState([]);
+  const [scenarioState, setScenarioState] = useState<Scenario>();
 
 	function startScenarios(vhs_num: number, cms_num: number, speed: number) {
     socket.emit('start_scenario', vhs_num, cms_num, speed);
@@ -23,9 +24,8 @@ const Home = () => {
 
     function updateScenario(updatedScenario) {
       // @ts-ignore
-      //setScenarioState(previous => [...previous, value]);
+      setScenarioState(updatedScenario["data"]);
       console.log(updatedScenario);
-      setScenarioState(updatedScenario);
     }
 
     socket.on('connect', onConnect);
@@ -46,13 +46,12 @@ const Home = () => {
   return (
     <div style={{width: "100%", height: "500px"}}>
 
-      <Map/>
+{ scenarioState && <Map scenarioState={scenarioState}/> }
+    
       <div>Hallo Welt :)</div>
       {isConnected ? <p>test</p> : <p>not connencted</p>}
       <button onClick={() => startScenarios(5, 10, 0.02)}>Start Scenario</button>
 
-
-      {JSON.stringify(scenarioState)}
     </div>
   );
 }

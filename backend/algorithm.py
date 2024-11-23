@@ -176,8 +176,8 @@ example_data = {
         }
     ]}
 
-AVG_SPEED = 11.11
 SINK_NODE_ID = "sink_node"
+AVG_SPEED = 11.11
 
 def customer_start_pos(customer):
     return [customer["coordX"], customer["coordY"]]
@@ -193,7 +193,7 @@ def cost(pos1, pos2, speed):
     return dist(pos1, pos2) / speed
 
 # Cost for doing a request, when the vehicle is still at the previous customer
-def cost_for_customer(current_position, customer, speed = AVG_SPEED):
+def cost_for_customer(current_position, customer, speed):
     cost_to_next_job = cost(current_position, customer_start_pos(customer), speed)
     cost_to_finish_job = cost(customer_start_pos(customer), customer_end_pos(customer), speed)
     return  cost_to_next_job + cost_to_finish_job
@@ -206,17 +206,17 @@ def add_customer_nodes(G, customers):
             pos=(customer["coordX"], customer["coordY"]),
         )
 
-def add_customer_edges(G, customers):
+def add_customer_edges(G, customers, speed):
     for firstCustomer in customers:
         for secondCustomer in customers:
             if firstCustomer != secondCustomer:
                 G.add_edge(
                     firstCustomer["id"],
                     secondCustomer["id"],
-                    weight=cost_for_customer(customer_end_pos(firstCustomer), secondCustomer)
+                    weight=cost_for_customer(customer_end_pos(firstCustomer), secondCustomer, speed)
                 )
 
-def add_vehicles(G: nx.DiGraph, vehicles : list[Vehicle], customers: list[Customer]):
+def add_vehicles(G: nx.DiGraph, vehicles : list[Vehicle], customers: list[Customer], speed):
     customer_nodes = list(filter(lambda x: x != SINK_NODE_ID, copy.copy(list(G.nodes()))))
     starting_nodes = []
     # Nodes from starting positions
@@ -232,7 +232,7 @@ def add_vehicles(G: nx.DiGraph, vehicles : list[Vehicle], customers: list[Custom
         if vehicle["isAvailable"]:
             # Taxi can still select from all available customers, no knowledge about speed
             potential_customers = customer_nodes
-            cost_func = lambda customer: cost_for_customer(vehicle_position, customer)
+            cost_func = lambda customer: cost_for_customer(vehicle_position, customer, speed)
         else:
             # Taxi continues its job and we can account for its speed
             potential_customers = [vehicle["customerId"]]
@@ -251,7 +251,7 @@ def add_sink(G):
 def clean_solution(solution):
     return list(map(lambda x: x[1:-1], solution))
 
-def create_plan(scenario, coefficient=10):
+def create_plan(scenario, coefficient=10, assumed_speed = AVG_SPEED):
     customers, vehicles = scenario["customers"], scenario["vehicles"]
 
     # TODO: Does this belong here?
@@ -260,15 +260,15 @@ def create_plan(scenario, coefficient=10):
     G = nx.DiGraph()
     
     add_customer_nodes(G, customers)
-    add_customer_edges(G, customers)
+    add_customer_edges(G, customers, assumed_speed)
     add_sink(G)
-    starting_nodes = add_vehicles(G, vehicles, customers)
+    starting_nodes = add_vehicles(G, vehicles, customers, assumed_speed)
 
     solution = solver.solve_tsp(G, SINK_NODE_ID, starting_nodes, coefficient)
     solution = clean_solution(solution)
     return solution
-    
 
+        
 if __name__ == "__main__":
     #test_solver()
     print(create_plan(example_data, 100))

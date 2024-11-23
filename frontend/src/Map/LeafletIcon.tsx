@@ -1,4 +1,4 @@
-import { Car, FlagCheckered } from "@phosphor-icons/react";
+import { Car, FlagCheckered, UserCircle } from "@phosphor-icons/react";
 import { divIcon, PointExpression } from "leaflet";
 import { ReactNode } from "react";
 import { renderToString } from "react-dom/server";
@@ -21,4 +21,8 @@ const LFlagIcon = () => {
 	return LeafletIcon(<FlagCheckered size={32} color="#000000" weight="fill" />, [5, 28]);
 }
 
-export { LCarIcon, LFlagIcon };
+const LCustomerIcon = () => {
+	return LeafletIcon(<UserCircle size={32} color="#000000" weight="fill" />, [5, 28]);
+}
+
+export { LCarIcon, LFlagIcon, LCustomerIcon };
