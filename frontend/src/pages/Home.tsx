@@ -26,19 +26,19 @@ const ScenarioDialogue = (props: {
               <Text>Number of vehicels</Text>
               <Text p="5px" lh="1" size='xl' className={styles.numberIndicator}>{vhs}</Text>
             </Group>
-            <Slider size="lg" min={0} max={50} step={1} value={vhs} onChange={setVhs} label={null} marks={[
+            <Slider size="lg" min={1} max={20} step={1} value={vhs} onChange={setVhs} label={null} marks={[
               { value: 0, label: '0' },
-              { value: 25, label: '25' },
-              { value: 50, label: '50' },
+              { value: 10, label: '10' },
+              { value: 20, label: '20' },
             ]}/>
             <Group mt={40} mb="xs" gap={10}>
               <Text>Number of customers</Text>
               <Text p="5px" lh="1" size='xl' className={styles.numberIndicator}>{cms}</Text>
             </Group>
-            <Slider size="lg" min={0} max={200} step={1} value={cms} onChange={setCms} label={null} marks={[
+            <Slider size="lg" min={1} max={100} step={1} value={cms} onChange={setCms} label={null} marks={[
               { value: 0, label: '0' },
+              { value: 50, label: '50' },
               { value: 100, label: '100' },
-              { value: 200, label: '200' },
             ]}/>
             <Button mt={50} onClick={() => props.run(vhs, cms)}>Start Scenario</Button>
           </Fieldset>
