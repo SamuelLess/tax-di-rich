@@ -1,5 +1,5 @@
 import requests
-
+from algorithm import create_plan
 
 def init_scenario(id_sc):
     data = get_scenario(id_sc)

@@ -224,20 +224,26 @@ def add_vehicles(G: nx.DiGraph, vehicles : list[Vehicle], customers: list[Custom
     starting_nodes = []
     # Nodes from starting positions
     for vehicle in vehicles:
-        if vehicle["isAvailable"] or True:
-            vehicle_position = (vehicle["coordX"], vehicle["coordY"])
-            starting_nodes.append(vehicle["id"])
-            G.add_node(
-                    vehicle["id"],
-                    pos=vehicle_position
-                ),
-            print(len(customer_nodes))
-            for customer_id in customer_nodes:
-                customer = next((x for x in customers if x["id"] == customer_id), None)
-                starting_cost = cost_for_customer(vehicle_position, customer)
-                G.add_edge(vehicle["id"], customer_id, weight = starting_cost)
-        else: 
-            print("Unimplemented: Vehicle is busy")
+        vehicle_position = (vehicle["coordX"], vehicle["coordY"])
+        starting_nodes.append(vehicle["id"])
+
+        G.add_node(
+            vehicle["id"],
+            pos=vehicle_position
+        ),
+        
+        if vehicle["isAvailable"]:
+            # Taxi can still select from all available customers, no knowledge about speed
+            potential_customers = customer_nodes
+            comission_cost = cost_for_customer(vehicle_position, customer)
+        else:
+            # Taxi continues its job and we can account for its speed
+            potential_customers = [vehicle["customerId"]]
+            comission_cost = cost_for_customer(vehicle_position, customer, vehicle["vehicleSpeed"])
+
+        for customer_id in potential_customers:
+            customer = next((x for x in customers if x["id"] == customer_id), None)
+            G.add_edge(vehicle["id"], customer_id, weight = comission_cost)
     return starting_nodes
 
 def add_sink(G):
@@ -248,53 +254,24 @@ def add_sink(G):
 def clean_solution(solution):
     return list(map(lambda x: x[1:-1], solution))
 
-def build_graph(scenario):
+def create_plan(scenario, coefficient):
     customers, vehicles = scenario["customers"], scenario["vehicles"]
 
-    customers = customers
-    vehicles = vehicles
+    # TODO: Does this belong here?
+    customers = filter(lambda x: x["awaitingService"])
+
     G = nx.DiGraph()
     
     add_customer_nodes(G, customers)
     add_customer_edges(G, customers)
     add_sink(G)
     starting_nodes = add_vehicles(G, vehicles, customers)
-    print("Graph generated")
 
-    solution = solver.solve_tsp(G, SINK_NODE_ID, starting_nodes)
-
+    solution = solver.solve_tsp(G, SINK_NODE_ID, starting_nodes, coefficient)
     solution = clean_solution(solution)
-
-    pos = nx.get_node_attributes(G, 'pos')
- 
-
-    nx.draw_networkx_nodes(G, pos, node_size=300, nodelist=list(filter(lambda x: x not in starting_nodes , G.nodes())))
-
-    colors = ["red", "blue", "green", "yellow", "purple", "orange", "pink", "brown", "black", "gray"]
-
-    for color, path in enumerate(solution):
-        # draw the edges of the path
-        edgelist = [(path[i], path[i+1]) for i in range(len(path) - 1)]
-        nx.draw_networkx_edges(G, pos, edgelist=edgelist, width=2, edge_color=colors[color])
-    # edges
-    edges = G.edges(data=True)
-    nx.draw_networkx_edges(G, pos, edgelist=edges, alpha=0.01)
-
-    # node labels
-    #nx.draw_networkx_labels(G, pos, font_size=20, font_family="sans-serif")
-    # edge weight labels
-    #edge_labels = nx.get_edge_attributes(G, "weight")
-    #print(edge_labels)
-    #nx.draw_networkx_edge_labels(G, pos, edge_labels)
-
-    #print(nx.adjecency_matrix(G))
-
-    ax = plt.gca()
-    ax.margins(0.08)
-    plt.axis("off")
-    plt.tight_layout()
-    plt.show()
+    return solution
+    
 
 if __name__ == "__main__":
     #test_solver()
-    build_graph(example_data)
+    create_plan(example_data)

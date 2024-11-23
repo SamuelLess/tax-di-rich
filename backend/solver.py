@@ -42,7 +42,7 @@ def extract_solution(vehicle_count, manager, routing, solution, nodes):
         paths.append(list(map(lambda x: nodes[x], path)))
     return paths
 
-def solve_tsp(G: nx.DiGraph, end_node_id: str, starting_node_ids: list[str]):
+def solve_tsp(G: nx.DiGraph, end_node_id: str, starting_node_ids: list[str], coefficient = 100):
     nodes = list(G.nodes())
 
     starting_nodes_indices = [nodes.index(node) for node in starting_node_ids]
@@ -86,7 +86,7 @@ def solve_tsp(G: nx.DiGraph, end_node_id: str, starting_node_ids: list[str]):
     )
 
     distance_dimension = routing.GetDimensionOrDie(dimension_name)
-    distance_dimension.SetGlobalSpanCostCoefficient(100)
+    distance_dimension.SetGlobalSpanCostCoefficient(coefficient)
 
     solution = routing.SolveWithParameters(search_parameters)
     
