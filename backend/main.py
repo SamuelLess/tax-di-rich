@@ -3,6 +3,10 @@ import threading
 import time
 from pprint import pprint
 
+from aiohttp import web
+import socketio
+
+
 import matplotlib.pyplot as plt
 import networkx as nx
 
@@ -22,6 +26,14 @@ from scenario import (
 
 SIMULATION_SPEED = 0.005
 
+sio = socketio.AsyncServer(cors_allowed_origins='*')
+
+def start_web_server():
+    app = web.Application()
+    sio.attach(app)
+    app.add_routes([web.get('/', default_page)])
+    web.run_app(app, port=9090)
+
 
 def main():
     # get id from args
@@ -32,14 +44,22 @@ def main():
         print("Please provide a scenario id")
         exit(1)
     run_scenario(id_sc, speed=SIMULATION_SPEED)
+
+    web_thread = threading.Thread(target=start_web_server)
+    web_thread.start()
+
     loop_over_scenario(id_sc)
 
+async def default_page(request):
+    return web.Response(text="The backend for marjapussi is up and running.")
 
 def loop_over_scenario(id_sc):
     """status is 'CREATED' | 'RUNNING' | 'COMPLETED'"""
     scenario_data = get_scenario(id_sc)
     pprint(scenario_data)
     while scenario_data["status"] != "COMPLETED":
+        pprint(get_scenario(id_sc))
+        sio.start_background_task(sio.emit, 'updates', scenario_status(id_sc))
         vis_scenario(id_sc)
         print(scenario_status(id_sc))
         vhs_avail = get_vehicles_available_ids(id_sc)

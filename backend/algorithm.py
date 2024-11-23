@@ -240,9 +240,9 @@ def add_vehicles(G: nx.DiGraph, vehicles : list[Vehicle], customers: list[Custom
     return starting_nodes
 
 def add_sink(G):
-    G.add_node(SINK_NODE_ID, pos=(0, 0))
+    G.add_node(SINK_NODE_ID, pos=(48.13828, 11.619596))
     for node in G.nodes():
-        G.add_edge(node, "sink_node")
+        G.add_edge(node, "sink_node", weight = 0)
 
 def build_graph(scenario):
     customers, vehicles = scenario["customers"], scenario["vehicles"]
@@ -251,15 +251,50 @@ def build_graph(scenario):
     
     add_customer_nodes(G, customers)
     add_customer_edges(G, customers)
-    add_sink(G)
+    #add_sink(G)
     starting_nodes = add_vehicles(G, vehicles, customers)
     print("Graph generated")
 
-    solver.solve_tsp(G, SINK_NODE_ID, starting_nodes)
+    #solver.solve_tsp(G, SINK_NODE_ID, starting_nodes)
 
-    #nx.draw(G, nx.get_node_attributes(G, 'pos'), with_labels=True)
-    #plt.show()
+    pos = nx.get_node_attributes(G, 'pos')
+ 
+
+    nx.draw_networkx_nodes(G, pos, node_size=300, nodelist=list(filter(lambda x: x not in starting_nodes, G.nodes())))
+    nx.draw_networkx_nodes(G, pos, node_size=300, nodelist=starting_nodes, node_color="red")
+
+    # edges
+    nx.draw_networkx_edges(G, pos, width=1)
+
+    # node labels
+    #nx.draw_networkx_labels(G, pos, font_size=20, font_family="sans-serif")
+    # edge weight labels
+    #edge_labels = nx.get_edge_attributes(G, "weight")
+    #print(edge_labels)
+    #nx.draw_networkx_edge_labels(G, pos, edge_labels)
+
+    ax = plt.gca()
+    ax.margins(0.08)
+    plt.axis("off")
+    plt.tight_layout()
+    plt.show()
+
+def test_solver():
+    G = nx.DiGraph()
+    G.add_node("l")
+    G.add_node("m")
+    G.add_node("r")
+
+    G.add_edge("l", "m", weight=1)
+    G.add_edge("m", "r", weight=1)
+    G.add_edge("r", "l", weight=100)
+    G.add_edge("l", "r", weight=100)
+    G.add_edge("m", "l", weight=1)
+    G.add_edge("r", "m", weight=1)
+
+    solver.solve_tsp(G, "m", ["m", "m"])
 
 
 if __name__ == "__main__":
+    #test_solver()
     build_graph(example_data)
