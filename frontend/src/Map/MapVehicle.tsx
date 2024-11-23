@@ -13,13 +13,11 @@ export const MapVehicle = ({ vehicle, customer, startRemainingTime }: { vehicle:
     const [progress, setProgress] = useState(0);
 
      useEffect(() => {
-         const interval = setTimeout(() => { 
-           console.log(targetProgress)
-           console.log(progress)
-            setProgress(progress + (targetProgress - progress) * 0.1);
+         const interval = setInterval(() => { 
+            setProgress(prev => prev + (targetProgress - prev) * 0.1);
          }, 100);
          return () => clearInterval(interval);
-     },[progress, targetProgress, setProgress]);
+     },[targetProgress]);
 
      useEffect(() => {
         console.log("resetting progress");
@@ -57,7 +55,6 @@ export const MapVehicle = ({ vehicle, customer, startRemainingTime }: { vehicle:
     return (
         <>
             <Circle center={[vehicle.coordX, vehicle.coordY]} radius={20} fill fillColor="white"/>
-            <Marker position={[vehicle.coordX, vehicle.coordY]} icon={LCarIcon()} zIndexOffset={1}/>
             {showCustomer && <CustomerMarker customer={customer} />}
             {isOnPickupPath && <Route path={pickupPath} iconPos={pickupPathProgress} color={"#00FF00"} />}
             <Route path={dropoffPath} iconPos={dropoffPathProgress} color={"#FF0000"} />

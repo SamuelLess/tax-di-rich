@@ -3,7 +3,7 @@ from ortools.constraint_solver import routing_enums_pb2
 import networkx as nx
 import math
 
-ACCURACY = 10
+ACCURACY = 1
 
 # def print_solution(vehicle_count, manager, routing, solution):
 #     """Prints solution on console."""
@@ -80,16 +80,16 @@ def solve_tsp(G: nx.DiGraph, end_node_id: str, starting_node_ids: list[str], coe
             return 0
         if not G.has_edge(nodes[from_node], nodes[to_node]):
             return 212345
-        our_weight = round(G.get_edge_data(nodes[from_node], nodes[to_node])['weight'])
+        our_weight = int(G.get_edge_data(nodes[from_node], nodes[to_node])['weight'])
         return our_weight
         
 
     transit_callback_index = routing.RegisterTransitCallback(distance_callback)
     routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
     search_parameters = pywrapcp.DefaultRoutingSearchParameters()
-    search_parameters.time_limit.FromSeconds(5)
+    search_parameters.time_limit.FromSeconds(25)
     search_parameters.first_solution_strategy = (
-        routing_enums_pb2.FirstSolutionStrategy.AUTOMATIC
+        routing_enums_pb2.FirstSolutionStrategy.PATH_CHEAPEST_ARC
     )
     
     dimension_name = "Distance"
@@ -97,7 +97,7 @@ def solve_tsp(G: nx.DiGraph, end_node_id: str, starting_node_ids: list[str], coe
         transit_callback_index,
         0,
         # TODO: Do minutes
-        int(1 * 60 * 60), # Max time per car is 1 hour
+        int(1 * 60 * 60 ), # Max time per car is 1 hour
         True,
         dimension_name,
     )
