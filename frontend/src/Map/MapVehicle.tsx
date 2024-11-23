@@ -6,7 +6,7 @@ import Route from './Route';
 import { useEffect, useState } from "react";
 
 
-export const MapVehicle = ({ vehicle, customer }: { vehicle: Vehicle, customer?: Customer, startRemainingTime: number | null }) => {
+export const MapVehicle = ({ vehicle, customer, startRemainingTime }: { vehicle: Vehicle, customer?: Customer, startRemainingTime: number | null }) => {
     if (!customer) {
         console.log("vehicle without customer")
         return null;
@@ -28,28 +28,28 @@ export const MapVehicle = ({ vehicle, customer }: { vehicle: Vehicle, customer?:
     
     vehicle.remainingTravelTime, vehicle.distanceTravelled, vehicle.vehicleSpeed
 
-    const actualProgress = (vehicle.distanceTravelled / vehicle.vehicleSpeed) / vehicle.remainingTravelTime;
+    const actualProgress = startRemainingTime ? 1 - (vehicle.remainingTravelTime / startRemainingTime) : 0;
     console.log("actualProgress", actualProgress);
 
-    const [pos, setPos] = useState(0);
+    //const [pos, setPos] = useState(0);
 
     let firstPathProgress = null;
     let secondPathProgress = null;
 
-    if (pos < 0.5) {
-        firstPathProgress = pos / 0.5;
+    if (actualProgress < 0.5) {
+        firstPathProgress = actualProgress / 0.5;
     } else {
-        secondPathProgress = (pos - 0.5) / 0.5;
+        secondPathProgress = (actualProgress - 0.5) / 0.5;
     }
 
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setPos(Math.min(pos + 0.05, 1.0));
-        }, 500);
-        return () => clearInterval(interval);
-    },);
+    // useEffect(() => {
+    //     const interval = setInterval(() => {
+    //         setPos(Math.min(pos + 0.05, 1.0));
+    //     }, 500);
+    //     return () => clearInterval(interval);
+    // },);
 
-    const showCustomer = customer && pos < 0.5;
+    const showCustomer = customer && actualProgress < 0.5 && actualProgress !== null;
 
     return (
         <>

@@ -14,7 +14,9 @@ def get_customer_by_id(customer_id, customers):
     return next((x for x in customers if x["id"] == customer_id), None)
 
 def forecast_stats(scenario, coefficient, speed):
+    start = timeit.timeit()
     plans = create_plan(scenario, coefficient, speed)
+    time = timeit.timeit() - start
 
     timeplan = []
     i = 0
@@ -27,13 +29,14 @@ def forecast_stats(scenario, coefficient, speed):
             customer = get_customer_by_id(customer_id, customers)
             time_to_dropoff = cost_for_customer(pos, customer, speed)
             pickup_pos = [customer[p] for p in ["coordX", "coordY"]]
+            dropoff_pos = [customer[p] for p in ["destinationX", "destinationY"]]
             time_to_pickup = time_to_dropoff - cost_for_customer(pickup_pos, customer, speed)
             
             timeplan.append((time + time_to_pickup, "pickup", i))
             timeplan.append((time + time_to_dropoff, "dropoff", i))
 
             time += time_to_dropoff
-            pos = pickup_pos
+            pos = dropoff_pos
 
     timeplan.sort(key = lambda x: x[0])
     done, driving, waiting = 0, 0, len(scenario["customers"])
@@ -52,14 +55,7 @@ def forecast_stats(scenario, coefficient, speed):
         driving_y.append(driving)
         waiting_y.append(waiting)
 
-    # plt.plot(x, done_y, label="Done")
-    # plt.plot(x, driving_y, label="Driving")
-    # plt.plot(x, waiting_y, label="Waiting")
+    return x, waiting_y, driving_y, done_y, time
 
-    # plt.xlabel("X-axis")
-    # plt.ylabel("Y-axis")
-    # plt.legend()
-    # plt.show()
-    return x, waiting_y, driving_y, done_y
-
-forecast_stats(example_data, 10, 11.11)
+if __name__ == "__main__":
+    print(forecast_stats(example_data, 100, 11.11))

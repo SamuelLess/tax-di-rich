@@ -46,7 +46,6 @@ def loop_step(id_sc) -> (int, bool, dict):
     """
     sc_data = get_scenario(id_sc)
     solution = create_plan(sc_data)
-    print(solution)
     actions = []
     for vh, plan in zip(sc_data['vehicles'], solution):
         print(f"Vehicle {vh['id']} -> {plan}")
@@ -61,11 +60,8 @@ def loop_step(id_sc) -> (int, bool, dict):
     print(scenario_status(id_sc))
     print(f"Sending {len(actions)} cars...")
     rsp = send_cars(id_sc, actions)
-    print("IMPORTANT RESPONSE")
-    pprint(rsp)
     update_dict = {}
     for vh in rsp['updatedVehicles']:
-        print(f"Vehicle {vh['id']} is now moving to customer {vh['customerId']}")
         v_id = vh['id']
         remaining_travel_time = vh['remainingTravelTime']
         update_dict[v_id] = remaining_travel_time

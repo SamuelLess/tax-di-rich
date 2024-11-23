@@ -47,23 +47,22 @@ async def loop_sc(id_sc, speed):
     """status is 'CREATED' | 'RUNNING' | 'COMPLETED'"""
     start_remaining_time = {}
     scenario_data = get_scenario(id_sc)
-    pprint(scenario_data)
+    #pprint(scenario_data)
     while scenario_data["status"] != "COMPLETED":
         wait_time, update_required, update_remaining_times = loop_step(id_sc)
         start_remaining_time.update(update_remaining_times)
-        if update_required:
-            await sio.emit(
-                "update_scenario",
-                {
-                    "data": scenario_data,
-                    "status": scenario_status(id_sc),
-                    "start_remaining_time": start_remaining_time,
-                },
-            )
-        print(f"Sleeping for {wait_time}*{speed}={wait_time*speed} seconds...")
-        # time.sleep(wait_time * speed)
-        await sio.sleep(wait_time * speed)
+        print("sending update")
+        await sio.sleep(min(wait_time * speed, 0.5))
         scenario_data = get_scenario(id_sc)
+        await sio.emit(
+            "update_scenario",
+            {
+                "data": scenario_data,
+                "status": scenario_status(id_sc),
+                "start_remaining_time": start_remaining_time,
+            },
+        )
+
     print("Scenario completed")
     pprint(get_scenario(id_sc))
     pprint(scenario_status(id_sc))
