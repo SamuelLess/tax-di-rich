@@ -22,16 +22,16 @@
       
     "baseUrl": "./src",
     "paths": {
-      "@catalyst/*": ["catalyst/*"],
+      "@components/*": ["components/*"],
     },
+
+    "plugins": [{ "name": "typescript-plugin-css-modules" }]
   },
 
-  // nico: this needs to be changed - Proofreader needs to be a library or a module, that can be imported. Right now, web cant compile because it maps all errors from these modules to web
   "include": [
     "src"
-    //"test/parser/parser.test.ts",
-    //"../../libs/proofReader/ProofReaderExample.tsx"
   ],
+
   "exclude": ["node_modules"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

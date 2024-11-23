@@ -13,10 +13,10 @@ interface IData {
     time: number;
 }
 
-
 const driveUrl = (data: IData) => {
 	return `http://localhost:4546/ors/v2/directions/driving-car?start=${data.coordY},${data.coordX}&end=${data.destinationY},${data.destinationX}`
 }
+
 const fetchRoute = async (data: IData): Promise<IRoute | null> => {
 	try {
 		const URI = driveUrl(data);
@@ -27,6 +27,7 @@ const fetchRoute = async (data: IData): Promise<IRoute | null> => {
 		return null;
 	}
 }
+
 const Route = (props: { data: IData, elapsed: number }) => {
 
 	const [route, setRoute] = useState<null | IRoute>(null);

@@ -2,12 +2,12 @@ import { LatLngExpression } from 'leaflet';
 import { useEffect, useMemo, useState } from 'react';
 import { MapContainer, Marker, TileLayer } from 'react-leaflet'
 import Route from './Route';
-import { blobSchema } from './route';
+import { blobSchema, IRoute, routeSchema } from './route';
 import blob from "./blob.json";
 
 const UPDATE_INTERVAL = 200;
 const MUNICH_LATLONG: LatLngExpression = [48.137154, 11.576124];
-const data = blobSchema.parse(blob);
+// const data = blobSchema.parse(blob);
 
 const Map = () => {
 

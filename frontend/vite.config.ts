@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      "@catalyst": path.resolve(__dirname, "./src/catalyst"),
+      "@components": path.resolve(__dirname, "./src/components"),
     },
   },
 
