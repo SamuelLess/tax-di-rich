@@ -7,11 +7,23 @@ import { useEffect, useState } from "react";
 
 
 export const MapVehicle = ({ vehicle, customer, startRemainingTime }: { vehicle: Vehicle, customer?: Customer, startRemainingTime: number | null }) => {
+    const [progress, setProgress] = useState(0);
+
+    const targetProgress = startRemainingTime ? 1 - (vehicle.remainingTravelTime / startRemainingTime) : 0;
+    const clampedProgress = Math.min(1, Math.max(0, progress));
+    console.log("Target Progress", clampedProgress);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setProgress(progress + (targetProgress - progress) * 0.1);
+        }, 100);
+        return () => clearInterval(interval);
+    },[customer?.id, vehicle.id]);
+
     if (!customer) {
-        console.log("vehicle without customer")
-        return null;
-    }
-    
+        return <Marker position={[vehicle.coordX, vehicle.coordY]} icon={LCarIcon()} />;
+    }    
+
     const pickupPath = {
         startX: vehicle.coordX,
         startY: vehicle.coordY,
@@ -26,30 +38,17 @@ export const MapVehicle = ({ vehicle, customer, startRemainingTime }: { vehicle:
         endY: customer.destinationY
     };
     
-    vehicle.remainingTravelTime, vehicle.distanceTravelled, vehicle.vehicleSpeed
-
-    const actualProgress = startRemainingTime ? 1 - (vehicle.remainingTravelTime / startRemainingTime) : 0;
-    console.log("actualProgress", actualProgress);
-
-    //const [pos, setPos] = useState(0);
 
     let firstPathProgress = null;
     let secondPathProgress = null;
 
-    if (actualProgress < 0.5) {
-        firstPathProgress = actualProgress / 0.5;
+    if (progress < 0.5) {
+        firstPathProgress = progress / 0.5;
     } else {
-        secondPathProgress = (actualProgress - 0.5) / 0.5;
+        secondPathProgress = (progress - 0.5) / 0.5;
     }
 
-    // useEffect(() => {
-    //     const interval = setInterval(() => {
-    //         setPos(Math.min(pos + 0.05, 1.0));
-    //     }, 500);
-    //     return () => clearInterval(interval);
-    // },);
-
-    const showCustomer = customer && actualProgress < 0.5 && actualProgress !== null;
+    const showCustomer = customer && progress < 0.5 && progress !== null;
 
     return (
         <>

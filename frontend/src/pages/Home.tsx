@@ -50,7 +50,7 @@ const ScenarioDialogue = (props: {
 
 const ScenarioDisplay = (props: { state: Scenario, times: { [key: string]: number } }) => {
   return (
-    <div>
+    <div style={{height: "100%"}}>
       <Map scenarioState={props.state} startRemainingTimes={props.times} />
     </div>
   );

@@ -55,6 +55,8 @@ def forecast_stats(scenario, coefficient, speed):
         driving_y.append(driving)
         waiting_y.append(waiting)
 
+    times = []
+    
     return x, waiting_y, driving_y, done_y, time
 
 if __name__ == "__main__":
