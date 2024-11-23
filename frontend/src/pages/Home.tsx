@@ -19,7 +19,7 @@ const ScenarioDialogue = (props: {
       <Fieldset legend="Create a scenario" style={{ width: 500 }} variant='filled'>
         <Group mt={20} mb="xs" gap={10}>
           <Text>Number of vehicels</Text>
-          <Text size='xl' className={styles.numberIndicator}>{vhs}</Text>
+          <Text p="5px" lh="1" size='xl' className={styles.numberIndicator}>{vhs}</Text>
         </Group>
         <Slider size="lg" min={0} max={50} step={1} value={vhs} onChange={setVhs} label={null} marks={[
           { value: 0, label: '0' },
@@ -28,7 +28,7 @@ const ScenarioDialogue = (props: {
         ]}/>
         <Group mt={40} mb="xs" gap={10}>
           <Text>Number of customers</Text>
-          <Text size='xl' className={styles.numberIndicator}>{cms}</Text>
+          <Text p="5px" lh="1" size='xl' className={styles.numberIndicator}>{cms}</Text>
         </Group>
         <Slider size="lg" min={0} max={200} step={1} value={cms} onChange={setCms} label={null} marks={[
           { value: 0, label: '0' },
