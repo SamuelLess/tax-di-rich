@@ -6,6 +6,7 @@ from pprint import pprint
 import matplotlib.pyplot as plt
 
 from algorithm import create_plan
+from scenario import get_customers
 from scenario import (
     get_vehicles,
     get_scenario,
@@ -30,12 +31,14 @@ def main():
     run_scenario(id_sc, speed=SIMULATION_SPEED)
     loop_over_scenario(id_sc)
 
-def loop_step(id_sc) -> (int, bool, dict):
+def loop_step(id_sc, served_customers):
     """UPDATED START TIMES
     id => startRemainingTravelTime
     """
     sc_data = get_scenario(id_sc)
-    solution = create_plan(sc_data)
+    pprint(get_vehicles(id_sc))
+    pprint(get_customers(id_sc))
+    solution = create_plan(sc_data, served_customers)
     actions = []
     for vh, plan in zip(sc_data['vehicles'], solution):
         print(f"Vehicle {vh['id']} -> {plan}")
@@ -51,14 +54,16 @@ def loop_step(id_sc) -> (int, bool, dict):
     rsp = send_cars(id_sc, actions)
     update_dict = {}
     update_pos_dict = {}
+    newly_served = []
     for vh in rsp.get('updatedVehicles', []):
         v_id = vh['id']
         remaining_travel_time = vh['remainingTravelTime']
         update_dict[v_id] = remaining_travel_time
         update_pos_dict[v_id] = (vh['coordX'], vh['coordY'])
+        newly_served.append(vh['customerId'])
 
     wait_time = time_to_next_change(get_vehicles(id_sc))
-    return wait_time, len(actions) > 0, update_dict, update_pos_dict
+    return wait_time, len(actions) > 0, update_dict, update_pos_dict, newly_served
 
 
 def loop_over_scenario(id_sc):

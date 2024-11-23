@@ -48,10 +48,13 @@ async def loop_sc(id_sc, speed):
     """start_remaining_time = {id: {(posx, posy): time}}"""
     at_last_pos = {}
     start_remaining_time = {}
+    served_customers = set()
     scenario_data = get_scenario(id_sc)
     #pprint(scenario_data)
     while scenario_data["status"] != "COMPLETED":
-        wait_time, update_required, update_remaining_times, updated_at_last_pos = loop_step(id_sc)
+        wait_time, update_required, update_remaining_times, updated_at_last_pos, update_server_customers = (
+            loop_step(id_sc, served_customers))
+        served_customers.update(update_server_customers)
         start_remaining_time.update(update_remaining_times)
         at_last_pos.update(updated_at_last_pos)
         print("sending update")
