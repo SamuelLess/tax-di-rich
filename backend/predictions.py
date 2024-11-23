@@ -52,13 +52,14 @@ def forecast_stats(scenario, coefficient, speed):
         driving_y.append(driving)
         waiting_y.append(waiting)
 
-    plt.plot(x, done_y, label="Done")
-    plt.plot(x, driving_y, label="Driving")
-    plt.plot(x, waiting_y, label="Waiting")
+    # plt.plot(x, done_y, label="Done")
+    # plt.plot(x, driving_y, label="Driving")
+    # plt.plot(x, waiting_y, label="Waiting")
 
-    plt.xlabel("X-axis")
-    plt.ylabel("Y-axis")
-    plt.legend()
-    plt.show()
+    # plt.xlabel("X-axis")
+    # plt.ylabel("Y-axis")
+    # plt.legend()
+    # plt.show()
+    return x, waiting_y, driving_y, done_y
 
 forecast_stats(example_data, 10, 11.11)
