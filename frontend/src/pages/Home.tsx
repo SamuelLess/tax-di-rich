@@ -27,7 +27,7 @@ const ScenarioDialogue = (props: {
               <Text p="5px" lh="1" size='xl' className={styles.numberIndicator}>{vhs}</Text>
             </Group>
             <Slider size="lg" min={1} max={20} step={1} value={vhs} onChange={setVhs} label={null} marks={[
-              { value: 0, label: '0' },
+              { value: 1, label: '1' },
               { value: 10, label: '10' },
               { value: 20, label: '20' },
             ]}/>
@@ -36,7 +36,7 @@ const ScenarioDialogue = (props: {
               <Text p="5px" lh="1" size='xl' className={styles.numberIndicator}>{cms}</Text>
             </Group>
             <Slider size="lg" min={1} max={100} step={1} value={cms} onChange={setCms} label={null} marks={[
-              { value: 0, label: '0' },
+              { value: 1, label: '1' },
               { value: 50, label: '50' },
               { value: 100, label: '100' },
             ]}/>
