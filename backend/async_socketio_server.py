@@ -45,15 +45,24 @@ async def start_scenario(sid, vhs_num, cms_num, speed):
 
 async def loop_sc(id_sc, speed):
     """status is 'CREATED' | 'RUNNING' | 'COMPLETED'"""
+    """start_remaining_time = {id: {(posx, posy): time}}"""
+    at_last_pos = {}
     start_remaining_time = {}
     scenario_data = get_scenario(id_sc)
     #pprint(scenario_data)
     while scenario_data["status"] != "COMPLETED":
-        wait_time, update_required, update_remaining_times = loop_step(id_sc)
+        wait_time, update_required, update_remaining_times, updated_at_last_pos = loop_step(id_sc)
         start_remaining_time.update(update_remaining_times)
+        at_last_pos.update(updated_at_last_pos)
         print("sending update")
         await sio.sleep(min(wait_time * speed, 0.5))
         scenario_data = get_scenario(id_sc)
+        for vhs in scenario_data["vehicles"]:
+            if vhs["id"] in at_last_pos:
+                if at_last_pos[vhs["id"]] != (vhs["coordX"], vhs["coordY"]):
+                    start_remaining_time[vhs["id"]] = vhs["remainingTravelTime"]
+                    at_last_pos[vhs["id"]] = (vhs["coordX"], vhs["coordY"])
+
         await sio.emit(
             "update_scenario",
             {

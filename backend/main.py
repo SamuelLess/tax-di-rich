@@ -50,13 +50,15 @@ def loop_step(id_sc) -> (int, bool, dict):
     print(f"Sending {len(actions)} cars...")
     rsp = send_cars(id_sc, actions)
     update_dict = {}
+    update_pos_dict = {}
     for vh in rsp['updatedVehicles']:
         v_id = vh['id']
         remaining_travel_time = vh['remainingTravelTime']
         update_dict[v_id] = remaining_travel_time
+        update_pos_dict[v_id] = (vh['coordX'], vh['coordY'])
 
     wait_time = time_to_next_change(get_vehicles(id_sc))
-    return wait_time, len(actions) > 0, update_dict
+    return wait_time, len(actions) > 0, update_dict, update_pos_dict
 
 
 def loop_over_scenario(id_sc):
