@@ -3,30 +3,20 @@ import threading
 import time
 from pprint import pprint
 
-from aiohttp import web
-import socketio
-
-
 import matplotlib.pyplot as plt
-import networkx as nx
 
 from algorithm import create_plan
 from scenario import (
-    get_customers,
-    get_customers_waiting_ids,
     get_vehicles,
-    short_id,
     get_scenario,
     send_cars,
     scenario_status,
     time_to_next_change,
-    get_vehicles_available_ids,
     init_scenario,
     run_scenario,
 )
 
 SIMULATION_SPEED = 0.05
-SIMULATION_SPEED = 0.005
 
 
 def main():
@@ -55,7 +45,6 @@ def loop_step(id_sc) -> (int, bool, dict):
                 # send car to customer
                 actions.append((vh['id'], plan[0]))
 
-    """TIME OF CURRENT TRIP START FOR EACH CAR UTC"""
     #vis_scenario(id_sc)
     print(scenario_status(id_sc))
     print(f"Sending {len(actions)} cars...")
@@ -66,7 +55,7 @@ def loop_step(id_sc) -> (int, bool, dict):
         remaining_travel_time = vh['remainingTravelTime']
         update_dict[v_id] = remaining_travel_time
 
-    wait_time = time_to_next_change(id_sc)
+    wait_time = time_to_next_change(get_vehicles(id_sc))
     return wait_time, len(actions) > 0, update_dict
 
 
@@ -76,9 +65,6 @@ def loop_over_scenario(id_sc):
     pprint(scenario_data)
     while scenario_data["status"] != "COMPLETED":
         wait_time = loop_step(id_sc)
-        print(
-            f"Sleeping for {wait_time}*{SIMULATION_SPEED}={wait_time*SIMULATION_SPEED} seconds..."
-        )
         time.sleep(wait_time * SIMULATION_SPEED)
         scenario_data = get_scenario(id_sc)
     print("Scenario completed")

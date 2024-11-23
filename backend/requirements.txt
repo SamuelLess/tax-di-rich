@@ -4,3 +4,4 @@ networkx~=3.4.2
 ortools~=9.11.4210
 python-socketio~=5.11.4
 aiohttp~=3.11.7
+tqdm~=4.66.4

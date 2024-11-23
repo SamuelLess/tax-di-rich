@@ -1,6 +1,4 @@
 import requests
-from algorithm import create_plan
-
 
 def get_scenarios():
     return requests.get("http://localhost:8080/scenarios").json()
@@ -12,10 +10,9 @@ def create_scenario(vhs_num, cms_num):
     ).json()
 
 
-def init_scenario(id_sc):
+def init_scenario(id_sc, init_anyway=False):
     data = get_scenario(id_sc)
-    print(data)
-    if data.get("message", "") == "Scenario not found":
+    if data.get("message", "") == "Scenario not found" or init_anyway:
         print("Init scenario...")
         requests.post(
             f"http://localhost:8090/Scenarios/initialize_scenario?db_scenario_id={id_sc}",
@@ -40,13 +37,11 @@ def get_scenario(id_sc: str):
     return requests.get(f"http://localhost:8090/Scenarios/get_scenario/{id_sc}").json()
 
 
-def time_to_next_change(id_sc):
-    sc = get_scenario(id_sc)
+def time_to_next_change(vhs):
     ts = []
-    for v in sc["vehicles"]:
+    for v in vhs:
         ts.append(v["remainingTravelTime"])
     ts = [t for t in ts if t]
-    print(f"{ts=}")
     if not ts:
         return 0
     return min(ts)
