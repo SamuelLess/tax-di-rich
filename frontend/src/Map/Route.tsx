@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Polyline } from 'react-leaflet'
+import { Marker, Polyline } from 'react-leaflet'
 import { IRoute, routeSchema, routeLengths, getCoordinateAtPercentage } from './route';
+import { LCarIcon } from './LeafletIcon';
 
 interface IPath {
     startX: number;

@@ -57,7 +57,6 @@ export const MapVehicle = ({ vehicle, customer, startRemainingTime }: { vehicle:
             {isOnPickupPath && <Route path={pickupPath} iconPos={pickupPathProgress} color={"#00FF00"} />}
             <Route path={dropoffPath} iconPos={dropoffPathProgress} color={"#FF0000"} />
             {showCustomer && <CustomerMarker customer={customer} />}
-            <Marker position={[vehicle.coordX, vehicle.coordY]} icon={LCarIcon()} />
         </>
     );
 }
