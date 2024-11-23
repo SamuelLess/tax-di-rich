@@ -53,9 +53,6 @@ def solve_tsp(G: nx.DiGraph, end_node_id: str, starting_node_ids: list[str], coe
 
     routing = pywrapcp.RoutingModel(manager)
 
-
-    print(G.get_edge_data(nodes[1], nodes[2])['weight'])
-
     def distance_callback(from_index, to_index):
         from_node = manager.IndexToNode(from_index)
         to_node = manager.IndexToNode(to_index)

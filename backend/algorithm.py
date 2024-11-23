@@ -271,4 +271,4 @@ def create_plan(scenario, coefficient=10):
 
 if __name__ == "__main__":
     #test_solver()
-    create_plan(example_data, 100)
+    print(create_plan(example_data, 100))
