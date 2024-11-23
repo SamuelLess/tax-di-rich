@@ -1,13 +1,13 @@
 import { LatLngExpression } from 'leaflet';
 import { useEffect, useMemo, useState } from 'react';
 import { MapContainer, Marker, TileLayer } from 'react-leaflet'
-import Route from './Route';
 import { blobSchema, IRoute, routeSchema } from './route';
 import blob from "./blob.json";
 import { Scenario } from './scenario';
 import { CustomerMarker } from './Customer';
 import { MapVehicle } from './MapVehicle';
 import { Mark } from '@mantine/core/lib/components';
+import Route from './Route';
 
 const UPDATE_INTERVAL = 200;
 const MUNICH_LATLONG: LatLngExpression = [48.137154, 11.576124];
@@ -22,7 +22,7 @@ const data = {
 };
 // const data = blobSchema.parse(blob);
 
-const Map = ({ scenarioState }: { scenarioState: Scenario }) => {
+const Map = ({ scenarioState, startRemainingTimes }: { scenarioState: Scenario, startRemainingTimes: {[key: string]: number} }) => {
 
 	// const start = useMemo(() => Date.now(), []);
 	// const [time, setTime]= useState(0);
@@ -41,20 +41,15 @@ const Map = ({ scenarioState }: { scenarioState: Scenario }) => {
 				attribution='&copy; <a href="https://carto.com/">Carto</a>'
 				url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
 			/>
-			<Marker position={[48.113, 11.503302]} />
-			<Marker position={[48.165312, 11.646708]} />
-			{scenarioState.customers.map((customer) => (
+
+			{/* {scenarioState.customers.map((customer) => (
 				<CustomerMarker key={customer.id} customer={customer} />
-			))}
-			<Route data={data} elapsed={20} />
+			))} */}
+
 			{scenarioState.vehicles.map((vehicle) => {
-				const customerOfVehicle = scenarioState.customers.find(customer => customer.id === vehicle.customerId);
-				if (!customerOfVehicle) {
-					<Marker position={[vehicle.coordX, vehicle.coordY]} children="Vehicle without orders"/>
-				}
-			
+				const customerOfVehicle = scenarioState.customers.find(customer => customer.id === vehicle.customerId);		
 				return (
-					<MapVehicle key={vehicle.id} vehicle={vehicle} customer={customerOfVehicle!}/>
+					<MapVehicle key={vehicle.id} vehicle={vehicle} customer={customerOfVehicle!} startRemainingTime={startRemainingTimes[vehicle.id]}/>
 				);
 			})}
 		</MapContainer>

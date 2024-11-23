@@ -3,21 +3,18 @@ import { Marker, Polyline } from 'react-leaflet'
 import { LCarIcon, LFlagIcon } from './LeafletIcon';
 import { IRoute, routeSchema, routeLengths, getCoordinateAtPercentage } from './route';
 
-interface IData {
-    awaitingService: boolean;
-    coordX: number;
-    coordY: number;
-    destinationX: number;
-    destinationY: number;
-    id: string;
-    time: number;
+interface IPath {
+    startX: number;
+    startY: number;
+    endX: number;
+    endY: number;
 }
 
-const driveUrl = (data: IData) => {
-	return `http://localhost:4546/ors/v2/directions/driving-car?start=${data.coordY},${data.coordX}&end=${data.destinationY},${data.destinationX}`
+const driveUrl = (data: IPath) => {
+	return `http://localhost:4546/ors/v2/directions/driving-car?start=${data.startY},${data.startX}&end=${data.endY},${data.endX}`
 }
 
-const fetchRoute = async (data: IData): Promise<IRoute | null> => {
+const fetchRoute = async (data: IPath): Promise<IRoute | null> => {
 	try {
 		const URI = driveUrl(data);
 		const res = await fetch(URI);
@@ -28,41 +25,35 @@ const fetchRoute = async (data: IData): Promise<IRoute | null> => {
 	}
 }
 
-const Route = (props: { data: IData, elapsed: number }) => {
-
+const Route = (props: { path: IPath, iconPos: number | null, color: string }) => {
 	const [route, setRoute] = useState<null | IRoute>(null);
 	const routeLengthMap = useMemo(() => routeLengths(route), [route]);
-	const [[markerCurX, markerCurY], setMarkerCur] = useState([props.data.coordX, props.data.coordY])
-	const [[markerEndX, markerEndY], setMarkerEnd] = useState([props.data.destinationX, props.data.destinationY]);
 
 	useEffect(() => {
-		if (route && route.length > 0) {
-			setMarkerEnd(route[route.length - 1])
-			if (routeLengthMap !== null) {
-				const perc = 100 / props.data.time * props.elapsed;
-				const coord = getCoordinateAtPercentage(
-					route, 
-					routeLengthMap.lengths,
-					routeLengthMap.totalLength,
-					perc
-				);
-				setMarkerCur(coord);
-			}
-		}
-	}, [route, routeLengthMap, props])
-	
-	useEffect(() => {
-		fetchRoute(props.data).then(data => {
+		fetchRoute(props.path).then(data => {
 			if (data) setRoute(data)
 		})
-	}, [props.data])
+	}, [props.path])
 
+
+	if(route === null) return null;
+	if(routeLengthMap === null) return null;
+
+	let coord: [number, number] | null = null;
+
+	if(props.iconPos !== null) {
+		coord = getCoordinateAtPercentage(
+			route, 
+			routeLengthMap.lengths,
+			routeLengthMap.totalLength,
+			props.iconPos * 100
+		);
+	}	
 	return (
-		<Fragment>
-			<Marker position={[markerCurX, markerCurY]} icon={LCarIcon()} />
-			<Marker position={[markerEndX, markerEndY]} icon={LFlagIcon()} />
-			{route ? <Polyline positions={route} color='red' /> : null}
-		</Fragment>
+		<>
+			{coord && <Marker position={coord} icon={LCarIcon()} />}
+			{route ? <Polyline positions={route} color={props.color} /> : null}
+		</>
 	);
 
 };

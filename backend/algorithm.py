@@ -187,7 +187,16 @@ def customer_end_pos(customer):
 
 # Euclidean distance
 def dist(pos1, pos2):
-    return math.sqrt( (pos1[0] - pos2[0])**2 + (pos1[1] - pos1[1])**2 ) * 1000
+    lon1, lat1 = pos1
+    lon2, lat2 = pos2
+    lon1, lat1, lon2, lat2 = map(math.radians, [lon1, lat1, lon2, lat2])
+
+    dlon = lon2 - lon1 
+    dlat = lat2 - lat1 
+    a = math.sin(dlat/2)**2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon/2)**2
+    c = 2 * math.asin(math.sqrt(a)) 
+    r = 6371
+    return c * r * 1000 #returns distance in m
 
 def cost(pos1, pos2, speed):
     return dist(pos1, pos2) / speed

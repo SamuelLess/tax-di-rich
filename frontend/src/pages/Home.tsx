@@ -8,6 +8,7 @@ import { Scenario } from 'Map/scenario';
 const Home = () => {
   const [isConnected, setIsConnected] = useState(socket.connected);
   const [scenarioState, setScenarioState] = useState<Scenario>();
+  const [startRemainingTimes, setStartRemainingTimes] = useState<{[key: string]: number}>();
 
 	function startScenarios(vhs_num: number, cms_num: number, speed: number) {
     socket.emit('start_scenario', vhs_num, cms_num, speed);
@@ -25,6 +26,7 @@ const Home = () => {
     function updateScenario(updatedScenario) {
       // @ts-ignore
       setScenarioState(updatedScenario["data"]);
+      setStartRemainingTimes(updatedScenario["start_remaining_time"]);
       console.log(updatedScenario);
     }
 
@@ -46,7 +48,7 @@ const Home = () => {
   return (
     <div style={{width: "100%", height: "500px"}}>
 
-{ scenarioState && <Map scenarioState={scenarioState}/> }
+{ scenarioState && <Map scenarioState={scenarioState} startRemainingTimes={startRemainingTimes} /> }
     
       <div>Hallo Welt :)</div>
       {isConnected ? <p>test</p> : <p>not connencted</p>}
