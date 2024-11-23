@@ -4,7 +4,7 @@ import Home from './pages/Home';
 
 const Layout = () => {
   return (
-    <div style={{ width: "100vw", height: "100vw", position: "fixed" }}>
+    <div style={{ width: "100vw", height: "100vh", position: "fixed" }}>
       <Navbar />
       <Outlet />
     </div>

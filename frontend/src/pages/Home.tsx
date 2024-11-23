@@ -2,7 +2,7 @@ import Map from '../Map/Map'
 import { socket } from '../socket';
 import { useState, useEffect } from 'react';
 import { type Scenario } from 'Map/scenario';
-import { Button, Center, Fieldset, Text, Slider, Group, LoadingOverlay } from '@mantine/core';
+import { Button, Center, Fieldset, Text, Slider, Group, LoadingOverlay, Box, Stack } from '@mantine/core';
 import styles from "./Home.module.css";
 
 const ScenarioDialogue = (props: { 
@@ -14,29 +14,36 @@ const ScenarioDialogue = (props: {
   const [cms, setCms] = useState(10);
 
   return (
-    <Center mt="lg" pos="relative">
-      <LoadingOverlay visible={props.loading} />
-      <Fieldset legend="Create a scenario" style={{ width: 500 }} variant='filled'>
-        <Group mt={20} mb="xs" gap={10}>
-          <Text>Number of vehicels</Text>
-          <Text p="5px" lh="1" size='xl' className={styles.numberIndicator}>{vhs}</Text>
-        </Group>
-        <Slider size="lg" min={0} max={50} step={1} value={vhs} onChange={setVhs} label={null} marks={[
-          { value: 0, label: '0' },
-          { value: 25, label: '25' },
-          { value: 50, label: '50' },
-        ]}/>
-        <Group mt={40} mb="xs" gap={10}>
-          <Text>Number of customers</Text>
-          <Text p="5px" lh="1" size='xl' className={styles.numberIndicator}>{cms}</Text>
-        </Group>
-        <Slider size="lg" min={0} max={200} step={1} value={cms} onChange={setCms} label={null} marks={[
-          { value: 0, label: '0' },
-          { value: 100, label: '100' },
-          { value: 200, label: '200' },
-        ]}/>
-        <Button mt={50} onClick={() => props.run(vhs, cms)}>Start Scenario</Button>
-      </Fieldset>
+    <Center mt="lg">
+      <div className={styles.bg}></div>
+      <Stack align='center' gap={5}>
+        <Text mt="xl" c="white" size="30px">Welcome to <u>UNDER</u>.</Text>
+        <Text mt="md" mb="xl" c="white">Create a scenario to continue.</Text>
+        <Box pos="relative">
+          <LoadingOverlay visible={props.loading} />
+          <Fieldset style={{ width: 500 }} variant='filled'>
+            <Group mt={15} mb="xs" gap={10}>
+              <Text>Number of vehicels</Text>
+              <Text p="5px" lh="1" size='xl' className={styles.numberIndicator}>{vhs}</Text>
+            </Group>
+            <Slider size="lg" min={0} max={50} step={1} value={vhs} onChange={setVhs} label={null} marks={[
+              { value: 0, label: '0' },
+              { value: 25, label: '25' },
+              { value: 50, label: '50' },
+            ]}/>
+            <Group mt={40} mb="xs" gap={10}>
+              <Text>Number of customers</Text>
+              <Text p="5px" lh="1" size='xl' className={styles.numberIndicator}>{cms}</Text>
+            </Group>
+            <Slider size="lg" min={0} max={200} step={1} value={cms} onChange={setCms} label={null} marks={[
+              { value: 0, label: '0' },
+              { value: 100, label: '100' },
+              { value: 200, label: '200' },
+            ]}/>
+            <Button mt={50} onClick={() => props.run(vhs, cms)}>Start Scenario</Button>
+          </Fieldset>
+        </Box>
+      </Stack>
     </Center>
   );
 }
@@ -99,7 +106,7 @@ const Home = () => {
   };
 
   return (
-    <div style={{width: "100%", height: "500px"}}>
+    <div style={{width: "100%", height: "100%"}}>
       {scenarioState ? <ScenarioDisplay 
         state={scenarioState}
         times={startRemainingTimes}
