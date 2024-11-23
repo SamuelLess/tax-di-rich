@@ -14,15 +14,15 @@ def get_customer_by_id(customer_id, customers):
     return next((x for x in customers if x["id"] == customer_id), None)
 
 def forecast_stats(scenario, coefficient, speed):
-    start = timeit.timeit()
+    start = timeit.default_timer()
     plans = create_plan(scenario, coefficient, speed)
-    compute_time = timeit.timeit() - start
+    compute_time = timeit.default_timer() - start
 
     timeplan = []
     i = 0
     for plan, taxi in zip(plans, scenario["vehicles"]):
         i += 1
-        time = 0
+        cum_time = 0
         pos = [taxi["coordX"], taxi["coordY"]]
         customers = scenario["customers"]
         for customer_id in plan:
@@ -32,10 +32,10 @@ def forecast_stats(scenario, coefficient, speed):
             dropoff_pos = [customer[p] for p in ["destinationX", "destinationY"]]
             time_to_pickup = time_to_dropoff - cost_for_customer(pickup_pos, customer, speed)
             
-            timeplan.append((time + time_to_pickup, "pickup", i))
-            timeplan.append((time + time_to_dropoff, "dropoff", i))
+            timeplan.append((cum_time + time_to_pickup, "pickup", i))
+            timeplan.append((cum_time + time_to_dropoff, "dropoff", i))
 
-            time += time_to_dropoff
+            cum_time += time_to_dropoff
             pos = dropoff_pos
 
     timeplan.sort(key = lambda x: x[0])

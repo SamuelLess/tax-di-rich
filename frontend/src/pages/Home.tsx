@@ -102,7 +102,7 @@ const Home = () => {
 
   const startScenario = (vhs: number, cms: number) => {
     setIsLoading(true);
-    startScenarios(vhs, cms, 0.02)
+    startScenarios(vhs, cms, 0.1)
   };
 
   return (

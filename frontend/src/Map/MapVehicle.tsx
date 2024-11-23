@@ -13,12 +13,11 @@ export const MapVehicle = ({ vehicle, customer, startRemainingTime }: { vehicle:
     const clampedProgress = Math.min(1, Math.max(0, targetProgress));
 
     useEffect(() => {
-        console.log("Vehicle rendered");
         const interval = setInterval(() => {     
             setProgress(progress + (clampedProgress - progress) * 0.01);
         }, 100);
         return () => clearInterval(interval);
-    },[]);
+    },[setProgress]);
 
     if (!customer) {
         return <Marker position={[vehicle.coordX, vehicle.coordY]} icon={LCarIcon()} />;
@@ -37,7 +36,6 @@ export const MapVehicle = ({ vehicle, customer, startRemainingTime }: { vehicle:
         endX: customer.destinationX,
         endY: customer.destinationY
     };
-    
 
     let firstPathProgress = null;
     let secondPathProgress = null;

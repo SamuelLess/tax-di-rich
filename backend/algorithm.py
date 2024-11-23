@@ -267,14 +267,15 @@ def create_plan(scenario, coefficient=10, assumed_speed = AVG_SPEED):
 
     # TODO: Does this belong here?
     customers = list(filter(lambda x: x["awaitingService"], customers))
-    print("Start Graph")
+    if len(customers) == 0:
+        return [[]] * len(vehicles)
+
     G = nx.DiGraph()
-    
     add_customer_nodes(G, customers)
     add_customer_edges(G, customers, assumed_speed)
     add_sink(G)
+
     starting_nodes = add_vehicles(G, vehicles, customers, assumed_speed)
-    print("Start Solving")
     solution = solver.solve_tsp(G, SINK_NODE_ID, starting_nodes, coefficient)
     solution = clean_solution(solution)
     return solution
