@@ -1,12 +1,14 @@
 import { Marker } from "react-leaflet";
-import { Vehicle } from "./scenario";
+import { Customer, Vehicle } from "./scenario";
 import { LCarIcon } from "./LeafletIcon";
-import { Route } from "react-router";
+import { CustomerMarker } from "./Customer";
 
 
-export const MapVehicle = ({vehicle} : {vehicle: Vehicle}) => {
+export const MapVehicle = ({ vehicle, customer }: { vehicle: Vehicle, customer: Customer }) => {
     return (
-        <Marker position={[vehicle.coordX, vehicle.coordY]} icon={LCarIcon()} />
-        <Route
-        );
+        <>
+            <Marker position={[vehicle.coordX, vehicle.coordY]} icon={LCarIcon()} />
+            <CustomerMarker customer={customer} />
+        </>
+    );
 }

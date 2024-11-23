@@ -7,6 +7,7 @@ import blob from "./blob.json";
 import { Scenario } from './scenario';
 import { CustomerMarker } from './Customer';
 import { MapVehicle } from './MapVehicle';
+import { Mark } from '@mantine/core/lib/components';
 
 const UPDATE_INTERVAL = 200;
 const MUNICH_LATLONG: LatLngExpression = [48.137154, 11.576124];
@@ -18,10 +19,10 @@ const data = {
 	"destinationY": 11.588274,
 	"id": "a3f1c04f-64a5-4e33-b872-3a13151924d7",
 	"time": 0.1
-  };
+};
 // const data = blobSchema.parse(blob);
 
-const Map = ({scenarioState} : {scenarioState: Scenario}) => {
+const Map = ({ scenarioState }: { scenarioState: Scenario }) => {
 
 	// const start = useMemo(() => Date.now(), []);
 	// const [time, setTime]= useState(0);
@@ -45,10 +46,17 @@ const Map = ({scenarioState} : {scenarioState: Scenario}) => {
 			{scenarioState.customers.map((customer) => (
 				<CustomerMarker key={customer.id} customer={customer} />
 			))}
-			 <Route data={data} elapsed={20}/> 
-			 {scenarioState.vehicles.map((vehicle) => (
-				<MapVehicle key={vehicle.id} vehicle={vehicle} />
-			))}
+			<Route data={data} elapsed={20} />
+			{scenarioState.vehicles.map((vehicle) => {
+				const customerOfVehicle = scenarioState.customers.find(customer => customer.id === vehicle.customerId);
+				if (!customerOfVehicle) {
+					<Marker position={[vehicle.coordX, vehicle.coordY]} children="Vehicle without orders"/>
+				}
+			
+				return (
+					<MapVehicle key={vehicle.id} vehicle={vehicle} customer={customerOfVehicle!}/>
+				);
+			})}
 		</MapContainer>
 	);
 
