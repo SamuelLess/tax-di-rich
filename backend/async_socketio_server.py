@@ -60,9 +60,8 @@ async def loop_sc(id_sc, speed, use_efficient):
     scenario_data = get_scenario(id_sc)
     #pprint(scenario_data)
     while scenario_data["status"] != "COMPLETED":
-        wait_time, update_required, update_remaining_times, updated_at_last_pos, update_server_customers = (
-            loop_step(id_sc, served_customers, use_efficient))
-        served_customers.update(update_server_customers)
+        wait_time, update_required, update_remaining_times, updated_at_last_pos = (
+            loop_step(id_sc, use_efficient))
         start_remaining_time.update(update_remaining_times)
         at_last_pos.update(updated_at_last_pos)
         print("sending update")
@@ -82,7 +81,7 @@ async def loop_sc(id_sc, speed, use_efficient):
                 "start_remaining_time": start_remaining_time,
             },
         )
-        forc = forecast_stats(scenario_data, served_customers, COEFFICIENT, speed)
+        forc = forecast_stats(scenario_data, COEFFICIENT, speed)
         await sio.emit("update_forecast", forc)
 
 

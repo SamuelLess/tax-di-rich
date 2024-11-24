@@ -164,9 +164,9 @@ def get_customer_by_id(customer_id, customers):
     # TODO refactor in algorithm.py
     return next((x for x in customers if x["id"] == customer_id), None)
 
-def forecast_stats(scenario, served_customers, coefficient, speed):
+def forecast_stats(scenario, coefficient, speed):
     start = timeit.default_timer()
-    plans = create_plan(scenario, served_customers, coefficient, speed)
+    plans = create_plan(scenario, coefficient, speed)
     compute_time = timeit.default_timer() - start
 
     timeplan = []

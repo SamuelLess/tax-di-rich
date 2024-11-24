@@ -1,4 +1,7 @@
 import requests
+import os
+import psutil
+
 
 def get_scenarios():
     return requests.get("http://localhost:8080/scenarios").json()
@@ -94,6 +97,11 @@ def scenario_status(id_sc):
     dists = [v["distanceTravelled"] for v in vhs]
     total_dists = sum(dists)
     trips = [v["numberOfTrips"] for v in vhs]
+
+    pid = os.getpid()
+    python_process = psutil.Process(pid)
+    memory_use = python_process.memory_info()[0]/2.**30  # memory use in GB...I think
+    print('memory use:', memory_use)
     totals = {
         "totalCustomers": len(data["customers"]),
         "totalVehicles": len(data["vehicles"]),
@@ -106,5 +114,7 @@ def scenario_status(id_sc):
         "averageDistance": total_dists / len(vhs),
         "distances": dists,
         "totalTrips": sum(trips),
+        "memoryUse": memory_use,
+        "cpuPercentage": psutil.cpu_percent(),
     }
     return totals

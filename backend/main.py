@@ -32,40 +32,35 @@ def main():
     run_scenario(id_sc, speed=SIMULATION_SPEED)
     loop_over_scenario(id_sc)
 
-def loop_step(id_sc, served_customers, use_efficient):
+def loop_step(id_sc, use_efficient):
     """UPDATED START TIMES
     id => startRemainingTravelTime
     """
     sc_data = get_scenario(id_sc)
     pprint(get_vehicles(id_sc))
     pprint(get_customers(id_sc))
-    solution = create_plan_greedy(sc_data, served_customers) if use_efficient else create_plan(sc_data, served_customers)
+    solution = create_plan_greedy(sc_data) if use_efficient else create_plan(sc_data)
     print(f"{solution=}")
     actions = []
     for vh, plan in zip(sc_data['vehicles'], solution):
-        #print(f"Vehicle {vh['id']} -> {plan}")
         # vehicle available and not moving
         if vh['isAvailable']:
             if plan:
                 # send car to customer
                 actions.append((vh['id'], plan[0]))
-
-    #vis_scenario(id_sc)
     print(scenario_status(id_sc))
     print(f"Sending {len(actions)} cars...")
     rsp = send_cars(id_sc, actions)
     update_dict = {}
     update_pos_dict = {}
-    newly_served = []
     for vh in rsp.get('updatedVehicles', []):
         v_id = vh['id']
         remaining_travel_time = vh['remainingTravelTime']
         update_dict[v_id] = remaining_travel_time
         update_pos_dict[v_id] = (vh['coordX'], vh['coordY'])
-        newly_served.append(vh['customerId'])
 
     wait_time = time_to_next_change(get_vehicles(id_sc))
-    return wait_time, len(actions) > 0, update_dict, update_pos_dict, newly_served
+    return wait_time, len(actions) > 0, update_dict, update_pos_dict
 
 
 def loop_over_scenario(id_sc):
