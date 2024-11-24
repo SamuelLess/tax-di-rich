@@ -54,8 +54,8 @@ export const MapVehicle = ({ vehicle, customer, startRemainingTime }: { vehicle:
 
     return (
         <>
-            {isOnPickupPath && <Route path={pickupPath} iconPos={pickupPathProgress} active={pickupPathProgress != null} />}
-            <Route path={dropoffPath} iconPos={dropoffPathProgress} active={dropoffPathProgress != null}/>
+            {isOnPickupPath && <Route path={pickupPath} iconPos={pickupPathProgress} active={isOnPickupPath} />}
+            <Route path={dropoffPath} iconPos={dropoffPathProgress} active={isOnDropoffPath}/>
             {showCustomer && <CustomerMarker customer={customer} />}
         </>
     );
