@@ -82,8 +82,8 @@ async def loop_sc(id_sc, speed, use_efficient):
         optimization_goals = {
             "algorithm": "greedy" if use_efficient else "optimal",
             "coefficient": COEFFICIENT,
-            "speed": goals[0],
-            "emission": goals[1],
+            "speed": goals[0] if goals else 0,
+            "emission": goals[1] if goals else 0,
         }
 
         await sio.emit(

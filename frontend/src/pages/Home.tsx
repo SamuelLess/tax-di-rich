@@ -84,7 +84,7 @@ const Parameters = (props: {optimzationGoals?: OptimizationGoals, sendCoefficien
     <Stack p={15}>
       <Text size='20px' my={10}>Optimization Goal</Text>
        <Slider mx={30} size="lg" min={1} max={100} step={1} value={coefficient} onChange={setCoefficient} label={null} marks={[
-        { value: 1, label: 'Emissions' },
+        { value: 1, label: 'Eco' },
         { value: 50, label: 'Balanced' },
         { value: 100, label: 'Speed' },
       ]}/>
