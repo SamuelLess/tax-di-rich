@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Marker, Polyline } from 'react-leaflet'
 import { IRoute, routeSchema, routeLengths, getCoordinateAtPercentage } from './route';
 import { LCarIcon } from './LeafletIcon';
+import { LatLngExpression } from 'leaflet';
 
 interface IPath {
     startX: number;
@@ -25,10 +26,26 @@ const fetchRoute = async (data: IPath): Promise<IRoute | null> => {
 	}
 }
 
+const filterRoute = (route : IRoute, routeLengthMap, iconPos: number) => {
+	const newRoute : IRoute = [];
+	const totalLength = routeLengthMap.totalLength
+	const startDistance = totalLength * iconPos;
+	console.log("startDistance", startDistance, "totalLength", totalLength);
+
+	let index = 0;
+	let currentLength = 0;
+	while (currentLength < startDistance) {
+		currentLength += routeLengthMap.lengths[index];
+		index++;
+	}
+
+	return route.slice(index, route.length);
+}
 const Route = (props: { path: IPath, iconPos: number | null, active: boolean }) => {
 	const [route, setRoute] = useState<null | IRoute>(null);
 	const routeLengthMap = useMemo(() => routeLengths(route), [route]);
 
+	
 	useEffect(() => {
 		fetchRoute(props.path).then(data => {
 			if (data) setRoute(data)
@@ -49,12 +66,12 @@ const Route = (props: { path: IPath, iconPos: number | null, active: boolean }) 
 			props.iconPos * 100
 		);
 	}
-
+	const shownRoute = filterRoute(route, routeLengthMap, props.iconPos);
 
 	return (
 		<>
 			{coord ? <Marker position={coord} icon={LCarIcon()} /> : null}
-			{route ? <Polyline positions={route} color={"#bca0bd"} weight={props.active ? 3:1} opacity={props.active? 1: 0.8}/> : null}
+			{route ? <Polyline positions={shownRoute} color={"#bca0bd"} weight={props.active ? 3:1} opacity={props.active? 1: 0.8}/> : null}
 		</>
 	);
 

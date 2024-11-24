@@ -135,7 +135,7 @@ const Home = () => {
   const startScenario = (vhs: number, cms: number) => {
     setIsLoading(true);
     const SIMULATION_SPEED = 0.05;
-    const EFFICIENT_THRESHOLD = 10;
+    const EFFICIENT_THRESHOLD = 70;
     const USE_EFFICIENT = cms > EFFICIENT_THRESHOLD;
     startScenarios(vhs, cms, SIMULATION_SPEED, USE_EFFICIENT);
   };

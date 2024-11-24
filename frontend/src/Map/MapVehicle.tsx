@@ -14,7 +14,7 @@ export const MapVehicle = ({ vehicle, customer, startRemainingTime }: { vehicle:
 
      useEffect(() => {
          const interval = setInterval(() => { 
-            setProgress(prev => prev + (targetProgress - prev) * 0.1);
+            setProgress(prev => prev + (targetProgress - prev) * 0.05);
          }, 50);
          return () => clearInterval(interval);
      },[targetProgress]);
@@ -55,7 +55,7 @@ export const MapVehicle = ({ vehicle, customer, startRemainingTime }: { vehicle:
     return (
         <>
             {isOnPickupPath && <Route path={pickupPath} iconPos={pickupPathProgress} active={isOnPickupPath} />}
-            <Route path={dropoffPath} iconPos={dropoffPathProgress} active={isOnDropoffPath}/>
+            {!isOnPickupPath && <Route path={dropoffPath} iconPos={dropoffPathProgress} active={true}/>}
             {showCustomer && <CustomerMarker customer={customer} />}
         </>
     );

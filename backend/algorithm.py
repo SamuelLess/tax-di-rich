@@ -230,6 +230,10 @@ def add_vehicles(G: nx.DiGraph, vehicles : list[Vehicle], customers: list[Custom
     customer_nodes = list(filter(lambda x: x != SINK_NODE_ID, copy.copy(list(G.nodes()))))
     starting_nodes = []
     # Nodes from starting positions
+    reserved = set()
+    for vehicle in vehicles:
+        if vehicle["customerId"]:
+            reserved.add(vehicle["customerId"])
     for vehicle in vehicles:
         vehicle_position = (vehicle["coordX"], vehicle["coordY"])
         starting_nodes.append(vehicle["id"])
@@ -243,11 +247,13 @@ def add_vehicles(G: nx.DiGraph, vehicles : list[Vehicle], customers: list[Custom
             # Taxi can still select from all available customers, no knowledge about speed
             potential_customers = customer_nodes
             cost_func = lambda customer: cost_for_customer(vehicle_position, customer, speed)
+            for id in reserved:
+                if id in potential_customers:
+                    potential_customers.remove(id)
         else:
             # Taxi continues its job and we can account for its speed
             potential_customers = [vehicle["customerId"]]
             cost_func = lambda customer: cost_for_customer(vehicle_position, customer, vehicle["vehicleSpeed"])
-
         for customer_id in potential_customers:
             customer = next((x for x in customers if x["id"] == customer_id), None)
             G.add_edge(vehicle["id"], customer_id, weight = cost_func(customer))
@@ -268,7 +274,7 @@ def create_plan(scenario, served_customers, coefficient=10, assumed_speed = AVG_
 
     # TODO: Does this belong here?
     customers = list(filter(lambda x: x["awaitingService"], customers))
-    customers = list(filter(lambda x: x["id"] not in served_customers, customers))
+    #customers = list(filter(lambda x: x["id"] not in served_customers, customers))
     print(len(customers))
     if len(customers) == 0:
         return [[]] * len(vehicles)

@@ -63,7 +63,6 @@ def extract_solution(vehicle_count, manager, routing, solution, nodes):
 
 def solve_tsp(G: nx.DiGraph, end_node_id: str, starting_node_ids: list[str], coefficient = 100):
     nodes = list(G.nodes())
-
     starting_nodes_indices = [nodes.index(node) for node in starting_node_ids]
     end_node_index = nodes.index(end_node_id)
     manager = pywrapcp.RoutingIndexManager(
@@ -83,7 +82,7 @@ def solve_tsp(G: nx.DiGraph, end_node_id: str, starting_node_ids: list[str], coe
         our_weight = int(G.get_edge_data(nodes[from_node], nodes[to_node])['weight'])
         return our_weight
 
-    penalty = 1000
+    penalty = 1000000
     for node in range(1, len(nodes)):
         if manager.NodeToIndex(node) < 0:
             continue
@@ -92,9 +91,9 @@ def solve_tsp(G: nx.DiGraph, end_node_id: str, starting_node_ids: list[str], coe
     transit_callback_index = routing.RegisterTransitCallback(distance_callback)
     routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
     search_parameters = pywrapcp.DefaultRoutingSearchParameters()
-    search_parameters.local_search_metaheuristic = (
-    routing_enums_pb2.LocalSearchMetaheuristic.GUIDED_LOCAL_SEARCH)
-    search_parameters.time_limit.FromSeconds(1)
+    #search_parameters.local_search_metaheuristic = (
+    #routing_enums_pb2.LocalSearchMetaheuristic.GUIDED_LOCAL_SEARCH)
+    search_parameters.time_limit.FromSeconds(5)
     search_parameters.first_solution_strategy = (
         routing_enums_pb2.FirstSolutionStrategy.PATH_CHEAPEST_ARC
     )
@@ -104,7 +103,7 @@ def solve_tsp(G: nx.DiGraph, end_node_id: str, starting_node_ids: list[str], coe
         transit_callback_index,
         0,
         # TODO: Do minutes
-        int(1000 * 60 * 60 ), # Max time per car is 1 hour
+        int(100000 * 30 * 60 ), # Max time per car is 1 hour
         True,
         dimension_name,
     )
@@ -113,5 +112,10 @@ def solve_tsp(G: nx.DiGraph, end_node_id: str, starting_node_ids: list[str], coe
     distance_dimension.SetGlobalSpanCostCoefficient(coefficient)
 
     solution = routing.SolveWithParameters(search_parameters)
-    
+    print(solution)
+    if not solution:
+        search_parameters.local_search_metaheuristic = (
+        routing_enums_pb2.LocalSearchMetaheuristic.GUIDED_LOCAL_SEARCH)
+        solution = routing.SolveWithParameters(search_parameters)
+        print(solution)
     return extract_solution(len(starting_node_ids), manager, routing, solution, nodes)
