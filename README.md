@@ -11,10 +11,10 @@ Efficient vehicle scheduling is critical to improving customer satisfaction and 
 ---
 
 ## 🛠️ **What It Does**  
-UNDER leverages a **Constraint Programming SAT (CP-SAT)** algorithm to:  
-- Schedule vehicles in a predefined environment with optimal efficiency.  
-- Minimize delays and ensure timely operations.  
-- Adapt to dynamic routing scenarios in urban areas.  
+UNDER simplifies the passenger pick up and delivery to the **Vehicle Routing Problem (VRP)**, which is then solved using the highly optimized **CP-SAT** solver. 
+- Algorithm with very good results (more than 30% better than random allocation)
+- Scalable to over 50 taxis
+- For huge fleets, *UNDER* uses a still very good (over 20% improvement) greedy approximation algorithm
 
 ---
 
@@ -24,7 +24,7 @@ We combined cutting-edge technologies and tools to bring UNDER to life:
 - **OR-Tools**: To handle constraint-solving and optimization.  
 - **Socket.IO**: For real-time communication between the backend and frontend.  
 - **React**: To create an interactive and responsive user interface.  
-- **OpenRouteService**: For accurate routing and geolocation services.  
+- **OpenRouteService**: For routing accurate to the street.
 - **Leaflet**: To visualize maps and vehicle paths seamlessly.  
 
 ---
