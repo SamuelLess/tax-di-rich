@@ -283,7 +283,27 @@ def create_plan(scenario, served_customers, coefficient=10, assumed_speed = AVG_
     solution = clean_solution(solution)
     return solution
 
-        
+
+def create_plan_greedy(scenario, served_customers, coefficient=10, assumed_speed = AVG_SPEED):
+    customers, vehicles = scenario["customers"], scenario["vehicles"]
+    # get free vehicles and free customers and match as much as possible
+    # greedy approach
+    vhs_avail = [v for v in vehicles if v["isAvailable"]]
+    cms_waiting = [c for c in customers if c["awaitingService"] and c["id"] not in served_customers]
+    # sort by distance
+    ups = {vh['id']: [] for vh in scenario['vehicles']}
+    updates = [
+        (vhs_avail[i], cms_waiting[i])
+        for i in range(min(len(vhs_avail), len(cms_waiting)))
+    ]
+    for vh, cm in updates:
+        ups[vh['id']].append(cm['id'])
+    out = []
+    for vh in scenario['vehicles']:
+        out.append(ups[vh['id']])
+    return out
+
+
 if __name__ == "__main__":
     #test_solver()
     print(create_plan(example_data, set(), 100))

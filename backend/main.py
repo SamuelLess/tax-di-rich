@@ -6,6 +6,7 @@ from pprint import pprint
 import matplotlib.pyplot as plt
 
 from algorithm import create_plan
+from algorithm import create_plan_greedy
 from scenario import get_customers
 from scenario import (
     get_vehicles,
@@ -31,17 +32,18 @@ def main():
     run_scenario(id_sc, speed=SIMULATION_SPEED)
     loop_over_scenario(id_sc)
 
-def loop_step(id_sc, served_customers):
+def loop_step(id_sc, served_customers, use_efficient):
     """UPDATED START TIMES
     id => startRemainingTravelTime
     """
     sc_data = get_scenario(id_sc)
     pprint(get_vehicles(id_sc))
     pprint(get_customers(id_sc))
-    solution = create_plan(sc_data, served_customers)
+    solution = create_plan_greedy(sc_data, served_customers) if use_efficient else create_plan(sc_data, served_customers)
+    print(f"{solution=}")
     actions = []
     for vh, plan in zip(sc_data['vehicles'], solution):
-        print(f"Vehicle {vh['id']} -> {plan}")
+        #print(f"Vehicle {vh['id']} -> {plan}")
         # vehicle available and not moving
         if vh['isAvailable']:
             if plan:

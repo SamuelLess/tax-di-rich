@@ -1,5 +1,6 @@
 import sys
 import time
+from pprint import pprint
 
 from tqdm import tqdm
 
@@ -77,7 +78,13 @@ def loop_sc(id_sc, speed):
     sc_data = get_scenario(id_sc)
     #pprint(sc_data)
     while sc_data["status"] != "COMPLETED":
-        solution = create_plan(sc_data)
+        pprint(get_vehicles(id_sc))
+        if all(map(lambda x : not x, [v["isAvailable"] for v in sc_data["vehicles"]])):
+            time.sleep(0.2)
+            sc_data = get_scenario(id_sc)
+            continue
+        #TODO fix this!
+        #solution = create_plan(sc_data)
         actions = []
         for vh, plan in zip(sc_data['vehicles'], solution):
             # vehicle available and not moving

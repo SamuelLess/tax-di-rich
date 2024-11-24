@@ -79,7 +79,7 @@ def solve_tsp(G: nx.DiGraph, end_node_id: str, starting_node_ids: list[str], coe
         if from_node == to_node:
             return 0
         if not G.has_edge(nodes[from_node], nodes[to_node]):
-            return 212345
+            return 212345 # this is infinity lol (beyond)
         our_weight = int(G.get_edge_data(nodes[from_node], nodes[to_node])['weight'])
         return our_weight
 
@@ -94,7 +94,7 @@ def solve_tsp(G: nx.DiGraph, end_node_id: str, starting_node_ids: list[str], coe
     search_parameters = pywrapcp.DefaultRoutingSearchParameters()
     search_parameters.local_search_metaheuristic = (
     routing_enums_pb2.LocalSearchMetaheuristic.GUIDED_LOCAL_SEARCH)
-    search_parameters.time_limit.FromSeconds(5)
+    search_parameters.time_limit.FromSeconds(1)
     search_parameters.first_solution_strategy = (
         routing_enums_pb2.FirstSolutionStrategy.PATH_CHEAPEST_ARC
     )
@@ -115,4 +115,3 @@ def solve_tsp(G: nx.DiGraph, end_node_id: str, starting_node_ids: list[str], coe
     solution = routing.SolveWithParameters(search_parameters)
     
     return extract_solution(len(starting_node_ids), manager, routing, solution, nodes)
-

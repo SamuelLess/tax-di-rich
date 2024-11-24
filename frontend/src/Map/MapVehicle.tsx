@@ -15,7 +15,7 @@ export const MapVehicle = ({ vehicle, customer, startRemainingTime }: { vehicle:
      useEffect(() => {
          const interval = setInterval(() => { 
             setProgress(prev => prev + (targetProgress - prev) * 0.1);
-         }, 100);
+         }, 50);
          return () => clearInterval(interval);
      },[targetProgress]);
 

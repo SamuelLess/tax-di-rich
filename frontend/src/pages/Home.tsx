@@ -63,8 +63,8 @@ const Home = () => {
   const [scenarioState, setScenarioState] = useState<Scenario>();
   const [startRemainingTimes, setStartRemainingTimes] = useState<{[key: string]: number}>({});
 
-	function startScenarios(vhs_num: number, cms_num: number, speed: number) {
-    socket.emit('start_scenario', vhs_num, cms_num, speed);
+	function startScenarios(vhs_num: number, cms_num: number, speed: number, use_efficient: boolean) {
+    socket.emit('start_scenario', vhs_num, cms_num, speed, use_efficient);
   }
 
   useEffect(() => {
@@ -103,7 +103,10 @@ const Home = () => {
 
   const startScenario = (vhs: number, cms: number) => {
     setIsLoading(true);
-    startScenarios(vhs, cms, 0.1)
+    const SIMULATION_SPEED = 0.05;
+    const EFFICIENT_THRESHOLD = 10;
+    const USE_EFFICIENT = cms > EFFICIENT_THRESHOLD;
+    startScenarios(vhs, cms, SIMULATION_SPEED, USE_EFFICIENT);
   };
 
   return (
