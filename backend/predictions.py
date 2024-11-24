@@ -166,7 +166,7 @@ def get_customer_by_id(customer_id, customers):
 
 def forecast_stats(scenario, coefficient, speed):
     start = timeit.default_timer()
-    plans = create_plan(scenario, coefficient, speed)
+    (plans, _) = create_plan(scenario, coefficient, speed)
     compute_time = timeit.default_timer() - start
 
     timeplan = []

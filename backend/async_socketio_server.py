@@ -8,7 +8,6 @@ from aiohttp import web
 from predictions import forecast_stats
 from main import loop_step
 from scenario import (
-    get_scenarios,
     init_scenario,
     run_scenario,
     get_scenario,
@@ -33,13 +32,17 @@ async def connect(sid, environ):
 async def disconnect(sid):
     print("Client disconnected:", sid)
 
-COEFFICIENT = 0.1
+COEFFICIENT = 1
 
 @sio.event
 async def forecast(sid, coefficient):
+    print("Deprecated event")
+
+@sio.event
+async def update_optimization_goals(sid, coefficient):
     global COEFFICIENT
     COEFFICIENT = coefficient
-    print("New coefficient:", COEFFICIENT)
+    
 
 @sio.event
 async def start_scenario(sid, vhs_num, cms_num, speed, use_efficient):
@@ -60,11 +63,12 @@ async def loop_sc(id_sc, speed, use_efficient):
     scenario_data = get_scenario(id_sc)
     #pprint(scenario_data)
     while scenario_data["status"] != "COMPLETED":
-        wait_time, update_required, update_remaining_times, updated_at_last_pos = (
+        wait_time, update_required, update_remaining_times, updated_at_last_pos, goals = (
             loop_step(id_sc, use_efficient))
         start_remaining_time.update(update_remaining_times)
         at_last_pos.update(updated_at_last_pos)
         print("sending update")
+        print("COEFFICIENT", COEFFICIENT)
         await sio.sleep(min(wait_time * speed, 0.5))
         scenario_data = get_scenario(id_sc)
         for vhs in scenario_data["vehicles"]:
@@ -73,12 +77,22 @@ async def loop_sc(id_sc, speed, use_efficient):
                     start_remaining_time[vhs["id"]] = vhs["remainingTravelTime"]
                     at_last_pos[vhs["id"]] = (vhs["coordX"], vhs["coordY"])
 
+
+        
+        optimization_goals = {
+            "algorithm": "greedy" if use_efficient else "optimal",
+            "coefficient": COEFFICIENT,
+            "speed": goals[0],
+            "emission": goals[1],
+        }
+
         await sio.emit(
             "update_scenario",
             {
                 "data": scenario_data,
                 "status": scenario_status(id_sc),
                 "start_remaining_time": start_remaining_time,
+                "optimization_goals": optimization_goals,
             },
         )
         forc = forecast_stats(scenario_data, COEFFICIENT, speed)

@@ -39,7 +39,13 @@ def loop_step(id_sc, use_efficient):
     sc_data = get_scenario(id_sc)
     pprint(get_vehicles(id_sc))
     pprint(get_customers(id_sc))
-    solution = create_plan_greedy(sc_data) if use_efficient else create_plan(sc_data)
+    solution = []
+    goals = None
+    if use_efficient:
+        solution = create_plan_greedy(sc_data)
+    else:
+        solution, goals = create_plan(sc_data)
+
     print(f"{solution=}")
     actions = []
     for vh, plan in zip(sc_data['vehicles'], solution):
@@ -60,7 +66,7 @@ def loop_step(id_sc, use_efficient):
         update_pos_dict[v_id] = (vh['coordX'], vh['coordY'])
 
     wait_time = time_to_next_change(get_vehicles(id_sc))
-    return wait_time, len(actions) > 0, update_dict, update_pos_dict
+    return wait_time, len(actions) > 0, update_dict, update_pos_dict, goals
 
 
 def loop_over_scenario(id_sc):

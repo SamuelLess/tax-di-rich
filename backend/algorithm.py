@@ -276,7 +276,7 @@ def create_plan(scenario, coefficient=10, assumed_speed = AVG_SPEED):
     #customers = list(filter(lambda x: x["id"] not in served_customers, customers))
     print(len(customers))
     if len(customers) == 0:
-        return [[]] * len(vehicles)
+        return [[]] * len(vehicles), (0, 0)
 
     G = nx.DiGraph()
     add_customer_nodes(G, customers)
@@ -284,9 +284,10 @@ def create_plan(scenario, coefficient=10, assumed_speed = AVG_SPEED):
     add_sink(G)
 
     starting_nodes = add_vehicles(G, vehicles, scenario["customers"], assumed_speed)
-    solution = solver.solve_tsp(G, SINK_NODE_ID, starting_nodes, coefficient)
+    (solution, goals) = solver.solve_tsp(G, SINK_NODE_ID, starting_nodes, coefficient)
     solution = clean_solution(solution)
-    return solution
+    goals = (goals[0], goals[1] * AVG_SPEED) # (max time to finish, total distance driven)
+    return (solution, goals)
 
 
 def create_plan_random(scenario, coefficient=10, assumed_speed = AVG_SPEED):

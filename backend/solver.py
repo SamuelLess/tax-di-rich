@@ -61,6 +61,23 @@ def extract_solution(vehicle_count, manager, routing, solution, nodes):
         paths.append(list(map(lambda x: nodes[x], path)))
     return paths
 
+def extract_goals(vehicle_count, manager, routing, solution):
+    max_route_time = 0
+    total_time = 0
+    for vehicle_id in range(vehicle_count):
+        index = routing.Start(vehicle_id)
+        route_time = 0
+        while not routing.IsEnd(index):
+            previous_index = index
+            index = solution.Value(routing.NextVar(index))
+            route_time += routing.GetArcCostForVehicle(
+                previous_index, index, vehicle_id
+            )
+        total_time += route_time
+        max_route_time = max(route_time, max_route_time)
+    return max_route_time, total_time 
+
+
 def solve_tsp(G: nx.DiGraph, end_node_id: str, starting_node_ids: list[str], coefficient = 100):
     nodes = list(G.nodes())
     starting_nodes_indices = [nodes.index(node) for node in starting_node_ids]
@@ -118,4 +135,4 @@ def solve_tsp(G: nx.DiGraph, end_node_id: str, starting_node_ids: list[str], coe
         routing_enums_pb2.LocalSearchMetaheuristic.GUIDED_LOCAL_SEARCH)
         solution = routing.SolveWithParameters(search_parameters)
         print(solution)
-    return extract_solution(len(starting_node_ids), manager, routing, solution, nodes)
+    return (extract_solution(len(starting_node_ids), manager, routing, solution, nodes), extract_goals(len(starting_node_ids), manager, routing, solution))
