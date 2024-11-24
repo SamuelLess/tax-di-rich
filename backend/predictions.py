@@ -207,10 +207,17 @@ def forecast_stats(scenario, served_customers, coefficient, speed):
         waiting_y.append(waiting)
 
     times = [t[0] for t in timeplan]
-    avg_wait_time = sum(times) / len(times)
-    max_wait_time = max(times)
-    
-    return x, waiting_y, driving_y, done_y, avg_wait_time, max_wait_time, compute_time
+    if times:
+        avg_wait_time = sum(times) / len(times)
+        max_wait_time = max(times)
+    else:
+        avg_wait_time = 0
+        max_wait_time = 0
+    return {'x_axis': x,
+            'y_axis': {'waiting': waiting_y, 'driving': driving_y, 'done': done_y},
+            'avg_wait_time': avg_wait_time,
+            'max_wait_time': max_wait_time,
+            'compute_time': compute_time}
 
 if __name__ == "__main__":
     print(forecast_stats(test, set(), 100, 11.11))

@@ -82,8 +82,8 @@ async def loop_sc(id_sc, speed, use_efficient):
                 "start_remaining_time": start_remaining_time,
             },
         )
-        #forc = forecast_stats(scenario_data, served_customers, COEFFICIENT, speed)
-        #await sio.emit("update_forecast", forc)
+        forc = forecast_stats(scenario_data, served_customers, COEFFICIENT, speed)
+        await sio.emit("update_forecast", forc)
 
 
     print("Scenario completed")

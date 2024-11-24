@@ -7,12 +7,13 @@ import classNames from "classnames";
 import styles from "./Home.module.css";
 
 const ScenarioDialogue = (props: { 
-  run: (vhs: number, cms: number) => void,
+  run: (vhs: number, cms: number, speed: number) => void,
   loading: boolean,
 }) => {
 
   const [vhs, setVhs] = useState(5);
   const [cms, setCms] = useState(10);
+  const [speed, setSpeed] = useState(30);
 
   return (
     <Center mt="lg">
@@ -24,7 +25,7 @@ const ScenarioDialogue = (props: {
           <LoadingOverlay visible={props.loading} />
           <Fieldset style={{ width: 500 }} variant='filled'>
             <Group mt={15} mb="xs" gap={10}>
-              <Text>Number of vehicels</Text>
+              <Text>Number of vehicles</Text>
               <Text p="5px" lh="1" size='xl' className={styles.numberIndicator}>{vhs}</Text>
             </Group>
             <Slider size="lg" min={1} max={20} step={1} value={vhs} onChange={setVhs} label={null} marks={[
@@ -41,7 +42,16 @@ const ScenarioDialogue = (props: {
               { value: 50, label: '50' },
               { value: 100, label: '100' },
             ]}/>
-            <Button mt={50} onClick={() => props.run(vhs, cms)}>Start Scenario</Button>
+            {/*<Group mt={40} mb="xs" gap={10}>
+              <Text>Simulation Speed</Text>
+              <Text p="5px" lh="1" size='xl' className={styles.numberIndicator}>{speed}x</Text>
+            </Group>
+            <Slider size="lg" min={1} max={10} step={1} value={speed} onChange={setSpeed} label={null} marks={[
+              { value: 1, label: '1' },
+              { value: 5, label: '5' },
+              { value: 10, label: '10' },
+            ]}/>*/}
+            <Button mt={50} onClick={() => props.run(vhs, cms, speed)}>Start Scenario</Button>
           </Fieldset>
         </Box>
       </Stack>
@@ -51,7 +61,9 @@ const ScenarioDialogue = (props: {
 
 const ScenarioDisplay = (props: { 
   state: Scenario, 
-  times: { [key: string]: number } 
+  times: { [key: string]: number }
+  status: Object,
+  forecast: Object
 }) => {
   const [containerHeight, setContainerHeight] = useState(0);
   const sectionRef = useRef<HTMLDivElement | null>(null);
@@ -91,6 +103,8 @@ const Home = () => {
   const [isConnected, setIsConnected] = useState(socket.connected);
   const [scenarioState, setScenarioState] = useState<Scenario>();
   const [startRemainingTimes, setStartRemainingTimes] = useState<{[key: string]: number}>({});
+  const [status, setStatus] = useState<Object>({});
+  const [forecast, setForecast] = useState<Object>({});
 
 	function startScenarios(vhs_num: number, cms_num: number, speed: number, use_efficient: boolean) {
     socket.emit('start_scenario', vhs_num, cms_num, speed, use_efficient);
@@ -110,13 +124,19 @@ const Home = () => {
     function updateScenario(updatedScenario: any) {
       setScenarioState(updatedScenario["data"]);
       setStartRemainingTimes(updatedScenario["start_remaining_time"]);
+      setStatus(updatedScenario["status"]);
       setIsLoading(false);
       console.log(updatedScenario);
+    }
+
+    function updateForecast(updatedForecast: Object) {
+      setForecast(updatedForecast);
     }
 
     socket.on('connect', onConnect);
     socket.on('disconnect', onDisconnect);
     socket.on('update_scenario', updateScenario);
+    socket.on('update_forecast', updateForecast);
 
     socket.onAny((e, a) => console.log("got ev:", e, a))
 
@@ -126,18 +146,16 @@ const Home = () => {
       socket.off('connect', onConnect);
       socket.off('disconnect', onDisconnect);
       socket.off('update_scenario', updateScenario);
+      socket.off('update_forecast', updateForecast);
       socket.disconnect();
     };
-
-
   }, []);
 
-  const startScenario = (vhs: number, cms: number) => {
+  const startScenario = (vhs: number, cms: number, speed_x: number) => {
     setIsLoading(true);
-    const SIMULATION_SPEED = 0.05;
     const EFFICIENT_THRESHOLD = 70;
     const USE_EFFICIENT = cms > EFFICIENT_THRESHOLD;
-    startScenarios(vhs, cms, SIMULATION_SPEED, USE_EFFICIENT);
+    startScenarios(vhs, cms, 1/speed_x, USE_EFFICIENT);
   };
 
   return (
@@ -145,6 +163,8 @@ const Home = () => {
       {scenarioState ? <ScenarioDisplay 
         state={scenarioState}
         times={startRemainingTimes}
+        status={status}
+        forecast={forecast}
       /> : <ScenarioDialogue 
         run={startScenario}
         loading={isLoading && isConnected}

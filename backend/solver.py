@@ -109,7 +109,7 @@ def solve_tsp(G: nx.DiGraph, end_node_id: str, starting_node_ids: list[str], coe
     )
 
     distance_dimension = routing.GetDimensionOrDie(dimension_name)
-    distance_dimension.SetGlobalSpanCostCoefficient(coefficient)
+    distance_dimension.SetGlobalSpanCostCoefficient(int(coefficient))
 
     solution = routing.SolveWithParameters(search_parameters)
     print(solution)
