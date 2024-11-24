@@ -189,9 +189,25 @@ const ScenarioDisplay = (props: {
                 </Text>
               </Center>
             </Stack>
+            {/*<Stack className={styles.shadowbox} p={15} flex={1}>
+              <Text size='20px' mt={10}>Total C0₂</Text>
+              <Center my={5}>
+                <Text className={"font-weight-bold"} size='32px' m={30}>
+                  <CountUp end={props.status['totalDistance']/1000} duration={1.5} decimals={2} suffix="kT" />
+                </Text>
+              </Center>
+            </Stack>*/}
+          </Group>
+          <Group>
           <Stack className={styles.shadowbox} p={15} flex={1}>
               <Text size='20px' my={10}>Projected Customer Queue</Text>
               <ForecastGraph forecast = {props.forecast} />
+            </Stack>
+          </Group>
+          <Group>
+            <Stack className={styles.shadowbox} p={15} flex={1}>
+              <Text size='20px' mt={10}>C02 per Vehicle</Text>
+              <CoefficientGraph data={props.status['distances']}/>
             </Stack>
           </Group>
 
