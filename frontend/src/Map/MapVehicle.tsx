@@ -1,4 +1,4 @@
-import { CircleMarker, Marker } from "react-leaflet";
+import { Marker } from "react-leaflet";
 import { Customer, Vehicle } from "./scenario";
 import { LCarIcon } from "./LeafletIcon";
 import { CustomerMarker } from "./Customer";

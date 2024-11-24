@@ -1,8 +1,9 @@
 import Map from '../Map/Map'
 import { socket } from '../socket';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { type Scenario } from 'Map/scenario';
 import { Button, Center, Fieldset, Text, Slider, Group, LoadingOverlay, Box, Stack } from '@mantine/core';
+import classNames from "classnames";
 import styles from "./Home.module.css";
 
 const ScenarioDialogue = (props: { 
@@ -48,10 +49,38 @@ const ScenarioDialogue = (props: {
   );
 }
 
-const ScenarioDisplay = (props: { state: Scenario, times: { [key: string]: number } }) => {
+const ScenarioDisplay = (props: { 
+  state: Scenario, 
+  times: { [key: string]: number } 
+}) => {
+  const [containerHeight, setContainerHeight] = useState(0);
+  const sectionRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const calculateHeight = () => {
+      if (sectionRef.current === null) return;
+      const sectionOffset = sectionRef.current.offsetHeight;
+      setContainerHeight(sectionOffset);
+    };
+
+    // Calculate on mount and resize
+    calculateHeight();
+    window.addEventListener('resize', calculateHeight);
+    return () => window.removeEventListener('resize', calculateHeight);
+  }, [sectionRef]);
+
+
   return (
-    <div style={{height: "100%"}}>
-      <Map scenarioState={props.state} startRemainingTimes={props.times} />
+    <div style={{ height: "100%", overflow: "scroll" }} ref={sectionRef}>
+      {containerHeight > 0 ? <Group h={containerHeight - 60} w={"100%"} p={30}>
+        <Box flex={3} h={"100%"} className={classNames(styles.shadow, styles.mapbox)}>
+          <Map scenarioState={props.state} startRemainingTimes={props.times} radius={10}/>
+        </Box>
+        <Stack flex={2} h={"100%"}>
+          <Text size='30px'>Graph</Text>
+        </Stack>
+      </Group> : null }
+      <Box h={300} w={20} bg="red"></Box>
     </div>
   );
 } 
@@ -88,6 +117,8 @@ const Home = () => {
     socket.on('connect', onConnect);
     socket.on('disconnect', onDisconnect);
     socket.on('update_scenario', updateScenario);
+
+    socket.onAny((e, a) => console.log("got ev:", e, a))
 
     socket.connect();
 

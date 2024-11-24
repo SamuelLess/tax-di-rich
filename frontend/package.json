@@ -15,6 +15,7 @@
     "@mantine/core": "^7.14.1",
     "@mantine/hooks": "^7.14.1",
     "@phosphor-icons/react": "^2.1.7",
+    "classnames": "^2.5.1",
     "dayjs": "^1.11.13",
     "haversine-distance": "^1.2.3",
     "leaflet": "^1.9.4",

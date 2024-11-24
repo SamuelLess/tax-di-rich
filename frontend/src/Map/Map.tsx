@@ -5,11 +5,14 @@ import { MapVehicle } from './MapVehicle';
 import { CustomerMarker } from './Customer';
 import { LCustomerIconRed } from './LeafletIcon';
 
-const UPDATE_INTERVAL = 200;
 const MUNICH_LATLONG: LatLngExpression = [48.137154, 11.576124];
 
 
-const Map = ({ scenarioState, startRemainingTimes }: { scenarioState: Scenario, startRemainingTimes: {[key: string]: number} }) => {
+const Map = ({ scenarioState, startRemainingTimes, radius }: { 
+	scenarioState: Scenario, 
+	startRemainingTimes: {[key: string]: number},
+	radius: number
+}) => {
 
 	let customersToDo = scenarioState.customers.filter(customer => customer.awaitingService);
 	// set of assigned customers 
@@ -17,7 +20,7 @@ const Map = ({ scenarioState, startRemainingTimes }: { scenarioState: Scenario, 
 	// filter out assigned customers
 	customersToDo = customersToDo.filter(customer => !assignedCustomers.has(customer.id));
 	return (
-		<MapContainer center={MUNICH_LATLONG} zoom={12} scrollWheelZoom={true} style={{ height: "100%", width: "100%" }}>
+		<MapContainer  center={MUNICH_LATLONG} zoom={12} scrollWheelZoom={true} style={{ height: "100%", width: "100%", borderRadius: radius }}>
 			<TileLayer
 				attribution='&copy; <a href="https://carto.com/">Carto</a>'
 				url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
