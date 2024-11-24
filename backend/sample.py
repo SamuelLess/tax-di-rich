@@ -1,10 +1,11 @@
+import json
 import sys
 import time
 from pprint import pprint
 
 from tqdm import tqdm
 
-from algorithm import create_plan
+from algorithm import create_plan, create_plan_greedy, create_plan_random
 from scenario import (
     get_vehicles,
     get_scenario,
@@ -26,9 +27,9 @@ def main():
             print(f"Running {n} samples...")
             smp = sample_scenario(id_sc, n)
             print(smp)
-        else:
-            res = single_scenario_rand(id_sc)
-            print(res)
+            # write to file with `sample-MM-DD-HH-MM.json`
+            with open(f"sample-{time.strftime('%m-%d-%H-%M')}.json", "w") as f:
+                f.write(json.dumps(smp))
     else:
         print("Please provide a scenario id")
         exit(1)
@@ -37,70 +38,50 @@ def reset_scenario(id_sc):
     init_scenario(id_sc, init_anyway=True)
 
 
-def single_example_algo(id_sc):
+def single_example_algo(id_sc, plan_algo):
     reset_scenario(id_sc)
     run_scenario(id_sc, speed=SIMULATION_SPEED)
-    return loop_sc(id_sc, SIMULATION_SPEED)
+    return loop_create_plan(id_sc, SIMULATION_SPEED, plan_algo)
 
-
-def single_scenario_rand(id_sc):
-    reset_scenario(id_sc)
-    run_scenario(id_sc, speed=SIMULATION_SPEED)
-    return loop_over_scenario(id_sc)
 
 def sample_scenario(id_sc, n=10):
-    total_times = {"rand": [], "algo": []}
+    algos = ['RAND', 'GREEDY', 'ALGO']
+    total_times = {alg.lower(): [] for alg in algos}
     for _ in tqdm(range(n)):
-        res_rand = single_scenario_rand(id_sc)
-        total_times['rand'].append(res_rand["totalTime"])
-        res_algo = single_example_algo(id_sc)
-        total_times['algo'].append(res_algo["totalTime"])
-    return total_times | {'rand_avg': sum(total_times['rand'])/n, 'algo_avg': sum(total_times['algo'])/n}
+        for algo in algos:
+            res = single_example_algo(id_sc, algo)
+            total_times[algo.lower()].append(res["totalTime"])
+        print(total_times)
+    return total_times | {f"{alg}-avg": sum(times) / len(times) for alg, times in total_times.items()}
+    
 
+import typing as t
 
-def loop_over_scenario(id_sc):
-    scenario_data = get_scenario(id_sc)
-    while scenario_data["status"] != "COMPLETED":
-        vhs_avail = [v["id"] for v in scenario_data['vehicles'] if v["isAvailable"]]
-        cms_waiting = [c["id"] for c in scenario_data['customers'] if c["awaitingService"]]
-        updates = [
-            (vhs_avail[i], cms_waiting[i])
-            for i in range(min(len(vhs_avail), len(cms_waiting)))
-        ]
-        if updates:
-            send_cars(id_sc, updates)
-        wait_time = time_to_next_change(get_vehicles(id_sc))
-        time.sleep(wait_time * SIMULATION_SPEED*0.9)
-        scenario_data = get_scenario(id_sc)
-    return scenario_status(id_sc)
-
-def loop_sc(id_sc, speed):
+def loop_create_plan(id_sc, speed, plan_algo: str):
     sc_data = get_scenario(id_sc)
-    #pprint(sc_data)
     while sc_data["status"] != "COMPLETED":
-        pprint(get_vehicles(id_sc))
-        if all(map(lambda x : not x, [v["isAvailable"] for v in sc_data["vehicles"]])):
-            time.sleep(0.2)
-            sc_data = get_scenario(id_sc)
-            continue
-        #TODO fix this!
-        #solution = create_plan(sc_data)
+        match plan_algo:
+            case 'RAND':
+                solution = create_plan_random(sc_data)
+            case 'GREEDY':
+                solution = create_plan_greedy(sc_data)
+            case _:
+                solution = create_plan(sc_data)
         actions = []
         for vh, plan in zip(sc_data['vehicles'], solution):
             # vehicle available and not moving
-            if vh['isAvailable']:
-                if plan:
-                    # send car to customer
-                    actions.append((vh['id'], plan[0]))
+            if vh['isAvailable'] and plan:
+                actions.append((vh['id'], plan[0]))
         if actions:
             rsp = send_cars(id_sc, actions)
             if rsp.get("message"):
                 break
-
         wait_time = time_to_next_change(get_vehicles(id_sc))
         time.sleep(wait_time * speed)
         sc_data = get_scenario(id_sc)
     return scenario_status(id_sc)
+
+
 
 
 if __name__ == "__main__":

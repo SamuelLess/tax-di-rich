@@ -267,8 +267,7 @@ def add_sink(G):
 def clean_solution(solution):
     return list(map(lambda x: x[1:-1], solution))
 
-def create_plan(scenario, served_customers, coefficient=10, assumed_speed = AVG_SPEED):
-    print(served_customers)
+def create_plan(scenario, coefficient=10, assumed_speed = AVG_SPEED):
     print("Stuff started")
     customers, vehicles = scenario["customers"], scenario["vehicles"]
 
@@ -290,10 +289,14 @@ def create_plan(scenario, served_customers, coefficient=10, assumed_speed = AVG_
     return solution
 
 
-def create_plan_greedy(scenario, served_customers, coefficient=10, assumed_speed = AVG_SPEED):
+def create_plan_random(scenario, coefficient=10, assumed_speed = AVG_SPEED):
     customers, vehicles = scenario["customers"], scenario["vehicles"]
     # get free vehicles and free customers and match as much as possible
     # greedy approach
+    served_customers = set()
+    for vehicle in vehicles:
+        if vehicle["customerId"]:
+            served_customers.add(vehicle["customerId"])
     vhs_avail = [v for v in vehicles if v["isAvailable"]]
     cms_waiting = [c for c in customers if c["awaitingService"] and c["id"] not in served_customers]
     # sort by distance
@@ -309,6 +312,47 @@ def create_plan_greedy(scenario, served_customers, coefficient=10, assumed_speed
         out.append(ups[vh['id']])
     return out
 
+def create_plan_greedy(scenario, coefficient=10, assumed_speed=AVG_SPEED):
+    customers, vehicles = scenario["customers"], scenario["vehicles"]
+
+    served_customers = set()
+    for vehicle in vehicles:
+        if vehicle["customerId"]:
+            served_customers.add(vehicle["customerId"])
+    # Get free vehicles and free customers
+    vhs_avail = [v for v in vehicles if v["isAvailable"]]
+    cms_waiting = [c for c in customers if c["awaitingService"] and c["id"] not in served_customers]
+
+    # Prepare dictionary to store assigned customers for each vehicle
+    ups = {vh['id']: [] for vh in scenario['vehicles']}
+
+    distances = []
+    for vh in vhs_avail:
+        # Calculate distances to all waiting customers
+        distances.extend([
+            #(dist((vh["coordX"], vh["coordY"]), (cm["coordX"], cm["coordY"])), vh['id'], cm['id'])
+            (cost_for_customer((vh["coordX"], vh["coordY"]), cm, 1), vh['id'], cm['id'])
+            for cm in cms_waiting
+        ])
+
+    # Sort by distance
+    distances.sort(key=lambda x: x[0])
+    # get first len of vhs_avail distinct customers
+    best_cms = []
+    while len(best_cms) < len(vhs_avail) and distances:
+        _, vh_id, m_id = distances.pop(0)
+        if m_id not in best_cms:
+            best_cms.append(m_id)
+            ups[vh_id].append(m_id)
+
+    # Preparing the output
+    out = []
+    for vh in scenario['vehicles']:
+        out.append(ups[vh['id']])
+    return out
+
+if __name__ == "__main__":
+    print(create_plan_greedy(example_data, set(), 100))
 
 if __name__ == "__main__":
     #test_solver()
