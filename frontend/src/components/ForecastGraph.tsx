@@ -17,13 +17,18 @@ function ForecastGraph({forecast}: ForeCastData) {
       }
     );
   }
+
+  if(data.length < 2) {
+    return <>All customers have reached their destination</>
+  }
   return (
     <AreaChart
-      h={300}
+      h={150}
       data={data}
       dataKey="minutes"
       withLegend
       type="percent"
+      withXAxis={false}
       series={[
         { name: 'done', color: 'teal.6' },
         { name: 'driving', color: 'blue.6' },

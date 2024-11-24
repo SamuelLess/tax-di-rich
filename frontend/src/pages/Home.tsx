@@ -121,15 +121,18 @@ interface Status{
   totalCustomers: number,
   totalDistance: number,
   totalTime: 6488,
-  totalTrip: number,
+  totalTrips: number,
   totalVehicles: number,
   vehiclesAvailable: number,
-  vehiclesMoving: number
+  vehiclesMoving: number,
+  cpuPercentage: number,
+  memoryUse: number,
+  customersWaiting: number,
 }
 const ScenarioDisplay = (props: {
   state: Scenario, 
   times: { [key: string]: number }
-  status: Object,
+  status: Status,
   forecast: ForeCast,
   parametersPanel: JSX.Element
 }) => {
@@ -176,12 +179,7 @@ const ScenarioDisplay = (props: {
       </Box>
       {statOpened ? <Box flex={2} h={"100%"} style={{ overflowX: "hidden", overflowY: "scroll" }}>
         <Stack p={20}>
-          <Stack className={styles.shadowbox} p={15} flex={1}>
-            <Text size='20px' my={10}>Graph</Text>
-            <Box flex={1}>
-              <CoefficientGraph />
-            </Box>
-          </Stack>
+         
           <Group>
             <Stack className={styles.shadowbox} p={15} flex={1}>
               <Text size='20px' mt={10}>Total Distance</Text>
@@ -199,21 +197,25 @@ const ScenarioDisplay = (props: {
                 </Text>
               </Center>
             </Stack>
+          <Stack>
+              <Text size='20px' my={10}>Projected customer queue</Text>
+              <ForecastGraph forecast = {props.forecast} />
+            </Stack>
           </Group>
 
           <Group>
             <Stack className={styles.shadowbox} p={15} flex={1}>
-              <Text size='20px' my={10}>Taxi</Text>
+              <Text size='20px' my={10}>Serviced customers</Text>
+              <Center>
               <DonutChart
+              withLabels
               data={[
-                { name: 'USA', value: 400, color: 'blue' },
-                { name: 'Other', value: 200, color: 'green' },
+                { name: 'waiting', value: props.status["customersWaiting"], color: 'indigo.6' },
+                { name: 'satisfied', value: props.status["totalTrips"], color: 'teal.6' },
               ]}
             />
-            </Stack>
-            <Stack className={styles.shadowbox} p={15} flex={1}>
-              <Text size='20px' my={10}>Graph</Text>
-              <ForecastGraph forecast = {props.forecast}></ForecastGraph>
+              </Center>
+             
             </Stack>
           </Group>
           <Group>
@@ -222,15 +224,15 @@ const ScenarioDisplay = (props: {
               [
                 {
                   title: 'Compute Time per call',
-                  stats: `${props.forecast["compute_time"].toFixed(3)}s`,
+                  stats: `${props.forecast["compute_time"].toFixed(2)}s`,
                 },
                 {
                   title: 'CPU usage',
-                  stats: `${1} %`,
+                  stats: `${props.status["cpuPercentage"]}%`,
                 },
                 {
                   title: 'RAM usage',
-                  stats: `${1} &`,
+                  stats: `${props.status["memoryUse"].toFixed(2)} GB`,
                 },
               ]
             }></StatsGroup>

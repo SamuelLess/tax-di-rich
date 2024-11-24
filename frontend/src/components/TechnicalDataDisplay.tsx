@@ -20,7 +20,7 @@ interface TechData{
     data: any
 }
 export function StatsGroup({data}: TechData) {
-  const stats = data.map((stat) => (
+  const stats = data.map((stat: any) => (
     <div key={stat.title} className={classes.stat}>
       <Text className={classes.count}>{stat.stats}</Text>
       <Text className={classes.title}>{stat.title}</Text>
