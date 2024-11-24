@@ -48,7 +48,7 @@ const ScenarioDialogue = (props: {
               { value: 100, label: '100' },
             ]}/>
             <Center mt={60}>
-              <Button size='md' onClick={() => props.run(vhs, cms)}>Start Scenario</Button>
+              <Button size='md' onClick={() => props.run(vhs, cms, speed)}>Start Scenario</Button>
             </Center>
           </Fieldset>
         </Box>
