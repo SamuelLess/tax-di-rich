@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { Marker, Polyline } from 'react-leaflet'
 import { IRoute, routeSchema, routeLengths, getCoordinateAtPercentage } from './route';
 import { LCarIcon } from './LeafletIcon';
-import { LatLngExpression } from 'leaflet';
 
 interface IPath {
     startX: number;
@@ -27,7 +26,6 @@ const fetchRoute = async (data: IPath): Promise<IRoute | null> => {
 }
 
 const filterRoute = (route : IRoute, routeLengthMap, iconPos: number) => {
-	const newRoute : IRoute = [];
 	const totalLength = routeLengthMap.totalLength
 	const startDistance = totalLength * iconPos;
 	console.log("startDistance", startDistance, "totalLength", totalLength);

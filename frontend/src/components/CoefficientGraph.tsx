@@ -1,5 +1,5 @@
 import { LineChart } from '@mantine/charts';
-import { data } from './data';
+// import { data } from './data';
 
 function CoefficientGraph() {
   return (

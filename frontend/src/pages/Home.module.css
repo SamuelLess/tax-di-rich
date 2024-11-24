@@ -5,10 +5,10 @@
 
 .bg {
 	position: absolute;
-	top: 0;
+	top: -2vh;
 	z-index: -20;
-	width: 104vw;
-	height: 104vh;
+	width: 105vw;
+	height: 106vh;
 	background-image: url('/welcomebg.png'); /* Replace with your image path */
 	background-size: cover;      /* Ensures the image covers the entire area without distortion */
 	background-position: center; /* Centers the image */
@@ -16,11 +16,28 @@
 	filter: blur(15px);
 }
 
-.shadow {
-	box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+.mapbr {
+	border-right: 2px solid rgba(128, 128, 128, 0.3);
+}
+
+.floatTRbox {
+	z-index: 9999;
+	position: absolute;
+	top: 20px;
+	right: 20px;
+}
+
+.floatboxinner {
+	background: white;
+	padding: 10px;
 }
 
 .mapbox {
+	position: relative;
+}
+
+.shadowbox {
 	border: 1px solid rgba(128, 128, 128, 0.2);
 	border-radius: 10px;
+	box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }

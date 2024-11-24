@@ -1,16 +1,21 @@
 import Map from '../Map/Map'
 import { socket } from '../socket';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { type Scenario } from 'Map/scenario';
-import { Button, Center, Fieldset, Text, Slider, Group, LoadingOverlay, Box, Stack } from '@mantine/core';
-import classNames from "classnames";
+import { Button, Center, Fieldset, Text, Slider, Group, LoadingOverlay, Box, Stack, Badge, Collapse } from '@mantine/core';
 import styles from "./Home.module.css";
+import CoefficientGraph from '@components/CoefficientGraph';
+import ForecastGraph from '@components/ForecastGraph';
+import classNames from "classnames";
+import { CaretDown, CaretLeft, CaretRight, CaretUp, ChartBarHorizontal, Sliders } from "@phosphor-icons/react";
+import { useDisclosure } from '@mantine/hooks';
+
+
 
 const ScenarioDialogue = (props: { 
   run: (vhs: number, cms: number, speed: number) => void,
   loading: boolean,
 }) => {
-
   const [vhs, setVhs] = useState(5);
   const [cms, setCms] = useState(10);
   const [speed, setSpeed] = useState(30);
@@ -42,16 +47,9 @@ const ScenarioDialogue = (props: {
               { value: 50, label: '50' },
               { value: 100, label: '100' },
             ]}/>
-            {/*<Group mt={40} mb="xs" gap={10}>
-              <Text>Simulation Speed</Text>
-              <Text p="5px" lh="1" size='xl' className={styles.numberIndicator}>{speed}x</Text>
-            </Group>
-            <Slider size="lg" min={1} max={10} step={1} value={speed} onChange={setSpeed} label={null} marks={[
-              { value: 1, label: '1' },
-              { value: 5, label: '5' },
-              { value: 10, label: '10' },
-            ]}/>*/}
-            <Button mt={50} onClick={() => props.run(vhs, cms, speed)}>Start Scenario</Button>
+            <Center mt={60}>
+              <Button size='md' onClick={() => props.run(vhs, cms)}>Start Scenario</Button>
+            </Center>
           </Fieldset>
         </Box>
       </Stack>
@@ -65,35 +63,78 @@ const ScenarioDisplay = (props: {
   status: Object,
   forecast: Object
 }) => {
-  const [containerHeight, setContainerHeight] = useState(0);
-  const sectionRef = useRef<HTMLDivElement | null>(null);
+  
+  const [statOpened, { toggle: toggleStat }] = useDisclosure(false);
+  const [paramOpened, { toggle: toggleParam }] = useDisclosure(false);
 
-  useEffect(() => {
-    const calculateHeight = () => {
-      if (sectionRef.current === null) return;
-      const sectionOffset = sectionRef.current.offsetHeight;
-      setContainerHeight(sectionOffset);
-    };
-
-    // Calculate on mount and resize
-    calculateHeight();
-    window.addEventListener('resize', calculateHeight);
-    return () => window.removeEventListener('resize', calculateHeight);
-  }, [sectionRef]);
-
+  const statusCol = (() => {
+    switch (props.state.status) {
+      case "RUNNING": return "#378a00"; // Green
+      case "COMPLETED": return "#1563b0"; // Blue
+      // case "CREATED"
+      default: return "#d18315"; // Orange
+    }
+  })()
 
   return (
-    <div style={{ height: "100%", overflow: "scroll" }} ref={sectionRef}>
-      {containerHeight > 0 ? <Group h={containerHeight - 60} w={"100%"} p={30}>
-        <Box flex={3} h={"100%"} className={classNames(styles.shadow, styles.mapbox)}>
-          <Map scenarioState={props.state} startRemainingTimes={props.times} radius={10}/>
-        </Box>
-        <Stack flex={2} h={"100%"}>
-          <Text size='30px'>Graph</Text>
+    <Group style={{ height: "100%" }} gap={0}>
+      <Box flex={3} h={"100%"} className={classNames(styles.mapbox, { [`${styles.mapbr}`]: statOpened })}>
+        <Map scenarioState={props.state} startRemainingTimes={props.times} radius={0}/>
+        <Stack className={styles.floatTRbox}>
+          <Group className={classNames(styles.shadowbox, styles.floatboxinner)}>
+            <Badge size='lg' color={statusCol}>{props.state.status}</Badge>
+            <Button
+              size='compact-md'
+              variant="filled" 
+              leftSection={<Sliders weight='fill' />} 
+              rightSection={paramOpened ? <CaretUp /> : <CaretDown />}
+              onClick={toggleParam}
+            >Parameters</Button>
+            <Button
+              size='compact-md'
+              variant="filled" 
+              leftSection={<ChartBarHorizontal weight='fill' />} 
+              rightSection={statOpened ? <CaretLeft /> : <CaretRight />}
+              onClick={toggleStat}
+            >Statistics</Button>
+          </Group>
+          <Collapse in={paramOpened} className={classNames(styles.shadowbox, styles.floatboxinner)}>
+            Test
+          </Collapse>
         </Stack>
-      </Group> : null }
-      <Box h={300} w={20} bg="red"></Box>
-    </div>
+      </Box>
+      <Box flex={2} h={"100%"} style={{ overflowX: "hidden", overflowY: "scroll", display: statOpened ? "block" : "none" }}>
+        <Stack p={20}>
+          <Stack className={styles.shadowbox} p={15} flex={1}>
+            <Text size='20px' my={10}>Graph</Text>
+            <Box flex={1}>
+              <CoefficientGraph />
+            </Box>
+          </Stack>
+          <Group>
+            <Stack className={styles.shadowbox} p={15} flex={1}>
+              <Text size='20px' my={10}>Graph</Text>
+              <ForecastGraph />
+            </Stack>
+            <Stack className={styles.shadowbox} p={15} flex={1}>
+              <Text size='20px' my={10}>Graph</Text>
+              <ForecastGraph />
+            </Stack>
+          </Group>
+
+          <Group>
+            <Stack className={styles.shadowbox} p={15} flex={1}>
+              <Text size='20px' my={10}>Graph</Text>
+              <ForecastGraph />
+            </Stack>
+            <Stack className={styles.shadowbox} p={15} flex={1}>
+              <Text size='20px' my={10}>Graph</Text>
+              <ForecastGraph />
+            </Stack>
+          </Group>
+        </Stack>
+      </Box>
+    </Group>
   );
 } 
 

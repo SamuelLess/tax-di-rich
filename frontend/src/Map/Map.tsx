@@ -1,9 +1,8 @@
 import { LatLngExpression } from 'leaflet';
-import { MapContainer, Marker, TileLayer } from 'react-leaflet'
+import { MapContainer, TileLayer } from 'react-leaflet'
 import { Scenario } from './scenario';
 import { MapVehicle } from './MapVehicle';
 import { CustomerMarker } from './Customer';
-import { LCustomerIconRed } from './LeafletIcon';
 
 const MUNICH_LATLONG: LatLngExpression = [48.137154, 11.576124];
 
@@ -16,7 +15,7 @@ const Map = ({ scenarioState, startRemainingTimes, radius }: {
 
 	let customersToDo = scenarioState.customers.filter(customer => customer.awaitingService);
 	// set of assigned customers 
-	let assignedCustomers = new Set(scenarioState.vehicles.map(vehicle => vehicle.customerId));
+	const assignedCustomers = new Set(scenarioState.vehicles.map(vehicle => vehicle.customerId));
 	// filter out assigned customers
 	customersToDo = customersToDo.filter(customer => !assignedCustomers.has(customer.id));
 	return (
