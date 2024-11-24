@@ -262,12 +262,14 @@ def clean_solution(solution):
     return list(map(lambda x: x[1:-1], solution))
 
 def create_plan(scenario, served_customers, coefficient=10, assumed_speed = AVG_SPEED):
+    print(served_customers)
     print("Stuff started")
     customers, vehicles = scenario["customers"], scenario["vehicles"]
 
     # TODO: Does this belong here?
     customers = list(filter(lambda x: x["awaitingService"], customers))
     customers = list(filter(lambda x: x["id"] not in served_customers, customers))
+    print(len(customers))
     if len(customers) == 0:
         return [[]] * len(vehicles)
 

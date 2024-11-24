@@ -18,7 +18,7 @@ const ScenarioDialogue = (props: {
       <div className={styles.bg}></div>
       <Stack align='center' gap={5}>
         <Text mt="xl" c="white" size="30px">Welcome to <u>UNDER</u>.</Text>
-        <Text mt="md" mb="xl" c="white">Create a scenario to continue.</Text>
+        <Text mt="md" mb="xl" c="white">How big is your fleet?</Text>
         <Box pos="relative">
           <LoadingOverlay visible={props.loading} />
           <Fieldset style={{ width: 500 }} variant='filled'>

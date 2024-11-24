@@ -25,7 +25,7 @@ const fetchRoute = async (data: IPath): Promise<IRoute | null> => {
 	}
 }
 
-const Route = (props: { path: IPath, iconPos: number | null, color: string }) => {
+const Route = (props: { path: IPath, iconPos: number | null, active: boolean }) => {
 	const [route, setRoute] = useState<null | IRoute>(null);
 	const routeLengthMap = useMemo(() => routeLengths(route), [route]);
 
@@ -49,10 +49,12 @@ const Route = (props: { path: IPath, iconPos: number | null, color: string }) =>
 			props.iconPos * 100
 		);
 	}
+
+
 	return (
 		<>
 			{coord ? <Marker position={coord} icon={LCarIcon()} /> : null}
-			{route ? <Polyline positions={route} color={props.color} /> : null}
+			{route ? <Polyline positions={route} color={"#bca0bd"} weight={props.active ? 3:1} opacity={props.active? 1: 0.8}/> : null}
 		</>
 	);
 

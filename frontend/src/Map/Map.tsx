@@ -1,7 +1,9 @@
 import { LatLngExpression } from 'leaflet';
-import { MapContainer, TileLayer } from 'react-leaflet'
+import { MapContainer, Marker, TileLayer } from 'react-leaflet'
 import { Scenario } from './scenario';
 import { MapVehicle } from './MapVehicle';
+import { CustomerMarker } from './Customer';
+import { LCustomerIconRed } from './LeafletIcon';
 
 const UPDATE_INTERVAL = 200;
 const MUNICH_LATLONG: LatLngExpression = [48.137154, 11.576124];
@@ -17,9 +19,10 @@ const Map = ({ scenarioState, startRemainingTimes }: { scenarioState: Scenario, 
 				url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
 			/>
 
-			{/* {scenarioState.customers.map((customer) => (
-				<CustomerMarker key={customer.id} customer={customer} />
-			))} */}
+			 {/* {scenarioState.customers.map((customer) => ({
+				return (<Marker key={customer.id} position={[customer.coordX, customer.coordY]} icon={LCustomerIconRed()} />)
+			 }
+			))}  */}
 
 			{scenarioState.vehicles.map((vehicle) => {
 				const customerOfVehicle = scenarioState.customers.find(customer => customer.id === vehicle.customerId);		

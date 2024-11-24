@@ -524,9 +524,9 @@ def get_customer_by_id(customer_id, customers):
     # TODO refactor in algorithm.py
     return next((x for x in customers if x["id"] == customer_id), None)
 
-def forecast_stats(scenario, coefficient, speed):
+def forecast_stats(scenario, served_customers, coefficient, speed):
     start = timeit.default_timer()
-    plans = create_plan(scenario, coefficient, speed)
+    plans = create_plan(scenario, served_customers, coefficient, speed)
     compute_time = timeit.default_timer() - start
 
     timeplan = []
@@ -573,4 +573,4 @@ def forecast_stats(scenario, coefficient, speed):
     return x, waiting_y, driving_y, done_y, avg_wait_time, max_wait_time, compute_time
 
 if __name__ == "__main__":
-    print(forecast_stats(test, 100, 11.11))
+    print(forecast_stats(test, set(), 100, 11.11))

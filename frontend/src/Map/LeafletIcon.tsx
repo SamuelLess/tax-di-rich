@@ -21,4 +21,7 @@ const LCustomerIcon = () => {
 	return LeafletIcon("/user.svg", [16, 16]);
 }
 
-export { LCarIcon, LCustomerIcon };
+const LCustomerIconRed = () => {
+	return LeafletIcon("/user-red.svg", [16, 16]);
+}
+export { LCarIcon, LCustomerIcon, LCustomerIconRed };

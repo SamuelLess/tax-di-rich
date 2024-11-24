@@ -82,12 +82,19 @@ def solve_tsp(G: nx.DiGraph, end_node_id: str, starting_node_ids: list[str], coe
             return 212345
         our_weight = int(G.get_edge_data(nodes[from_node], nodes[to_node])['weight'])
         return our_weight
-        
+
+    penalty = 1000
+    for node in range(1, len(nodes)):
+        if manager.NodeToIndex(node) < 0:
+            continue
+        routing.AddDisjunction([manager.NodeToIndex(node)], penalty)    
 
     transit_callback_index = routing.RegisterTransitCallback(distance_callback)
     routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
     search_parameters = pywrapcp.DefaultRoutingSearchParameters()
-    search_parameters.time_limit.FromSeconds(25)
+    search_parameters.local_search_metaheuristic = (
+    routing_enums_pb2.LocalSearchMetaheuristic.GUIDED_LOCAL_SEARCH)
+    search_parameters.time_limit.FromSeconds(5)
     search_parameters.first_solution_strategy = (
         routing_enums_pb2.FirstSolutionStrategy.PATH_CHEAPEST_ARC
     )
@@ -97,7 +104,7 @@ def solve_tsp(G: nx.DiGraph, end_node_id: str, starting_node_ids: list[str], coe
         transit_callback_index,
         0,
         # TODO: Do minutes
-        int(1 * 60 * 60 ), # Max time per car is 1 hour
+        int(1000 * 60 * 60 ), # Max time per car is 1 hour
         True,
         dimension_name,
     )
