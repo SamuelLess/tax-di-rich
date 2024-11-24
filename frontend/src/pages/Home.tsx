@@ -72,7 +72,7 @@ const Parameters = (props: {optimzationGoals?: OptimizationGoals, sendCoefficien
 
   if (props.optimzationGoals?.algorithm !== "optimal") {
     return <Stack p={15}>
-      <Text size='20px' mt={10}>Optimization goal</Text>
+      <Text size='20px' mt={10}>Optimization Goal</Text>
       <Text size='16px'style={{maxWidth: "20rem", lineHeight: "1.5rem"}}>The greedy optimization algorithm does not allow changing the goals.</Text>
     </Stack>
   }
@@ -82,7 +82,7 @@ const Parameters = (props: {optimzationGoals?: OptimizationGoals, sendCoefficien
   const emmissions_kg = Math.round(distanceInKm * EMMISSIONS_GRAM_PER_KM / 10) / 100;
   return (
     <Stack p={15}>
-      <Text size='20px' my={10}>Optimization goal</Text>
+      <Text size='20px' my={10}>Optimization Goal</Text>
        <Slider mx={30} size="lg" min={1} max={100} step={1} value={coefficient} onChange={setCoefficient} label={null} marks={[
         { value: 1, label: 'Emissions' },
         { value: 50, label: 'Balanced' },
@@ -93,7 +93,7 @@ const Parameters = (props: {optimzationGoals?: OptimizationGoals, sendCoefficien
 
     <Group>
 
-      <Text style={{width: "5rem"}}>Wait time:</Text><Text p="5px" lh="1" size='xl' className={styles.numberIndicator}>{Math.round(props.optimzationGoals.speed / 60)} min</Text>
+      <Text style={{width: "5rem"}}>Wait Time:</Text><Text p="5px" lh="1" size='xl' className={styles.numberIndicator}>{Math.round(props.optimzationGoals.speed / 60)} min</Text>
 
     </Group>
     <Group>
@@ -189,23 +189,15 @@ const ScenarioDisplay = (props: {
                 </Text>
               </Center>
             </Stack>
-            <Stack className={styles.shadowbox} p={15} flex={1}>
-              <Text size='20px' mt={10}>Customers Arrived</Text>
-              <Center my={5}>
-                <Text className={"font-weight-bold"} size='32px' m={30}>
-                  <CountUp redraw={false} end={(props.status['totalCustomers'] - props.status['customersWaiting'])/props.status['totalCustomers']*100} duration={1.5} decimals={2} suffix="%" />
-                </Text>
-              </Center>
-            </Stack>
-          <Stack>
-              <Text size='20px' my={10}>Projected customer queue</Text>
+          <Stack className={styles.shadowbox} p={15} flex={1}>
+              <Text size='20px' my={10}>Projected Customer Queue</Text>
               <ForecastGraph forecast = {props.forecast} />
             </Stack>
           </Group>
 
           <Group>
             <Stack className={styles.shadowbox} p={15} flex={1}>
-              <Text size='20px' my={10}>Serviced customers</Text>
+              <Text size='20px' my={10}>Serviced Customers</Text>
               <Center>
               <DonutChart
               withLabels
@@ -214,6 +206,9 @@ const ScenarioDisplay = (props: {
                 { name: 'satisfied', value: props.status["totalTrips"], color: 'teal.6' },
               ]}
             />
+            <Text className={"font-weight-bold"} style={{width: "10rem"}} size='32px' m={30}>
+                  <CountUp redraw={false} end={(props.status['totalCustomers'] - props.status['customersWaiting'])/props.status['totalCustomers']*100} duration={1.5} decimals={2} suffix="%" />
+                </Text>
               </Center>
              
             </Stack>
@@ -223,7 +218,7 @@ const ScenarioDisplay = (props: {
             <StatsGroup data = {
               [
                 {
-                  title: 'Compute Time per call',
+                  title: 'Planning Delay',
                   stats: `${props.forecast["compute_time"].toFixed(2)}s`,
                 },
                 {
