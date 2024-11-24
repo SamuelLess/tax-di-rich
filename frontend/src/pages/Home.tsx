@@ -206,14 +206,14 @@ const ScenarioDisplay = (props: {
           </Group>
           <Group>
             <Stack className={styles.shadowbox} p={15} flex={1}>
-              <Text size='20px' mt={10}>C02 per Vehicle</Text>
+              <Text size='20px' mt={10}>Energy usage per vehicle</Text>
               <CoefficientGraph data={props.status['distances']}/>
             </Stack>
           </Group>
 
           <Group>
             <Stack className={styles.shadowbox} p={15} flex={1}>
-              <Text size='20px' my={10}>Serviced Customers</Text>
+              <Text size='20px' my={10}>Served Customers</Text>
               <Center>
               <DonutChart
               withLabels
