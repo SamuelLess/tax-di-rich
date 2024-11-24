@@ -179,57 +179,7 @@ const ScenarioDisplay = (props: {
       </Box>
       {statOpened ? <Box flex={2} h={"100%"} style={{ overflowX: "hidden", overflowY: "scroll" }}>
         <Stack p={20}>
-         
-          <Group>
-            <Stack className={styles.shadowbox} p={15} flex={1}>
-              <Text size='20px' mt={10}>Total Distance</Text>
-              <Center my={5}>
-                <Text className={"font-weight-bold"} size='32px' m={30}>
-                  <CountUp end={props.status['totalDistance']/1000} duration={1.5} decimals={2} suffix="km" />
-                </Text>
-              </Center>
-            </Stack>
-            {/*<Stack className={styles.shadowbox} p={15} flex={1}>
-              <Text size='20px' mt={10}>Total C0₂</Text>
-              <Center my={5}>
-                <Text className={"font-weight-bold"} size='32px' m={30}>
-                  <CountUp end={props.status['totalDistance']/1000} duration={1.5} decimals={2} suffix="kT" />
-                </Text>
-              </Center>
-            </Stack>*/}
-          </Group>
-          <Group>
-          <Stack className={styles.shadowbox} p={15} flex={1}>
-              <Text size='20px' my={10}>Projected Customer Queue</Text>
-              <ForecastGraph forecast = {props.forecast} />
-            </Stack>
-          </Group>
-          <Group>
-            <Stack className={styles.shadowbox} p={15} flex={1}>
-              <Text size='20px' mt={10}>Energy usage per vehicle</Text>
-              <CoefficientGraph data={props.status['distances']}/>
-            </Stack>
-          </Group>
 
-          <Group>
-            <Stack className={styles.shadowbox} p={15} flex={1}>
-              <Text size='20px' my={10}>Served Customers</Text>
-              <Center>
-              <DonutChart
-              withLabels
-              data={[
-                { name: 'waiting', value: props.status["customersWaiting"], color: 'indigo.6' },
-                { name: 'satisfied', value: props.status["totalTrips"], color: 'teal.6' },
-              ]}
-            />
-            <Text className={"font-weight-bold"} style={{width: "10rem"}} size='32px' m={30}>
-                  <CountUp redraw={false} end={(props.status['totalCustomers'] - props.status['customersWaiting'])/props.status['totalCustomers']*100} duration={1.5} decimals={2} suffix="%" />
-                </Text>
-              </Center>
-             
-            </Stack>
-          </Group>
-          <Group>
           <Box flex={1}>
             <StatsGroup data = {
               [
@@ -247,8 +197,48 @@ const ScenarioDisplay = (props: {
                 },
               ]
             }></StatsGroup>
-            </Box>
+          </Box>
+
+          <Stack className={styles.shadowbox} p={15} flex={1}>
+            <Text size='20px' my={10}>Projected Customer Queue</Text>
+            <ForecastGraph forecast = {props.forecast} />
+          </Stack>
+
+          <Stack className={styles.shadowbox} p={15} flex={1}>
+            <Text size='20px' mt={10}>Energy usage per vehicle</Text>
+            <CoefficientGraph data={props.status['distances']}/>
+          </Stack>
+
+          <Group align='flex-start'>
+
+            <Stack className={styles.shadowbox} p={15} flex={1}>
+              <Text size='20px' my={10}>Served Customers</Text>
+              <Center>
+                  <DonutChart
+                  withLabels
+                  data={[
+                    { name: 'waiting', value: props.status["customersWaiting"], color: 'indigo.6' },
+                    { name: 'satisfied', value: props.status["totalTrips"], color: 'teal.6' },
+                  ]}
+                />
+              </Center>
+              <Center>
+                <Text className={"font-weight-bold"} style={{width: "10rem"}} size='32px' m={30}>
+                  <CountUp redraw={false} end={(props.status['totalCustomers'] - props.status['customersWaiting'])/props.status['totalCustomers']*100} duration={1.5} decimals={2} suffix="%" />
+                </Text>
+              </Center>
+             
+            </Stack>
+            <Stack className={styles.shadowbox} p={15} flex={1}>
+              <Text size='20px' mt={10}>Total Distance</Text>
+              <Center my={5}>
+                <Text className={"font-weight-bold"} size='32px' m={30}>
+                  <CountUp end={props.status['totalDistance']/1000} duration={1.5} decimals={2} suffix="km" />
+                </Text>
+              </Center>
+            </Stack>
           </Group>
+          
         </Stack>
       </Box> : null}
     </Group>
