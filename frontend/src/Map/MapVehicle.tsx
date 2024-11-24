@@ -20,13 +20,12 @@ export const MapVehicle = ({ vehicle, customer, startRemainingTime }: { vehicle:
      },[targetProgress]);
 
     useEffect(() => {
-        console.log("resetting progress");
         setProgress(0);
     }, [customer?.id, vehicle.coordX, vehicle.coordY]);
 
     if (!customer) {
         return <Marker position={[vehicle.coordX, vehicle.coordY]} icon={LCarIcon()} />;
-    }    
+    }
 
     const isOnDropoffPath = vehicle.coordX === customer.coordX && vehicle.coordY === customer.coordY;
     const isOnPickupPath = !isOnDropoffPath;
@@ -55,7 +54,7 @@ export const MapVehicle = ({ vehicle, customer, startRemainingTime }: { vehicle:
     return (
         <>
             {isOnPickupPath && <Route path={pickupPath} iconPos={pickupPathProgress} active={isOnPickupPath} />}
-            {!isOnPickupPath && <Route path={dropoffPath} iconPos={dropoffPathProgress} active={true}/>}
+            {!isOnPickupPath && <Route path={dropoffPath} iconPos={dropoffPathProgress} active={true} isDropOff/>}
             {showCustomer && <CustomerMarker customer={customer} />}
         </>
     );

@@ -103,7 +103,7 @@ const ScenarioDisplay = (props: {
           </Collapse>
         </Stack>
       </Box>
-      <Box flex={2} h={"100%"} style={{ overflowX: "hidden", overflowY: "scroll", display: statOpened ? "block" : "none" }}>
+      {statOpened ? <Box flex={2} h={"100%"} style={{ overflowX: "hidden", overflowY: "scroll" }}>
         <Stack p={20}>
           <Stack className={styles.shadowbox} p={15} flex={1}>
             <Text size='20px' my={10}>Graph</Text>
@@ -133,7 +133,7 @@ const ScenarioDisplay = (props: {
             </Stack>
           </Group>
         </Stack>
-      </Box>
+      </Box> : null}
     </Group>
   );
 } 
@@ -167,7 +167,6 @@ const Home = () => {
       setStartRemainingTimes(updatedScenario["start_remaining_time"]);
       setStatus(updatedScenario["status"]);
       setIsLoading(false);
-      console.log(updatedScenario);
     }
 
     function updateForecast(updatedForecast: Object) {
@@ -178,8 +177,6 @@ const Home = () => {
     socket.on('disconnect', onDisconnect);
     socket.on('update_scenario', updateScenario);
     socket.on('update_forecast', updateForecast);
-
-    socket.onAny((e, a) => console.log("got ev:", e, a))
 
     socket.connect();
 

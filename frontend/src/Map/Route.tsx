@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Marker, Polyline } from 'react-leaflet'
 import { IRoute, routeSchema, routeLengths, getCoordinateAtPercentage } from './route';
-import { LCarIcon } from './LeafletIcon';
+import { LCarIcon, LFlagIcon } from './LeafletIcon';
+import { useHotkeys } from '@mantine/hooks';
 
 interface IPath {
     startX: number;
@@ -25,10 +26,16 @@ const fetchRoute = async (data: IPath): Promise<IRoute | null> => {
 	}
 }
 
-const filterRoute = (route : IRoute, routeLengthMap, iconPos: number) => {
+const filterRoute = (
+	route : IRoute, 
+	routeLengthMap: {
+		lengths: number[];
+		totalLength: number;
+	}, 
+	iconPos: number,
+) => {
 	const totalLength = routeLengthMap.totalLength
 	const startDistance = totalLength * iconPos;
-	console.log("startDistance", startDistance, "totalLength", totalLength);
 
 	let index = 0;
 	let currentLength = 0;
@@ -39,10 +46,17 @@ const filterRoute = (route : IRoute, routeLengthMap, iconPos: number) => {
 
 	return route.slice(index, route.length);
 }
-const Route = (props: { path: IPath, iconPos: number | null, active: boolean }) => {
+const Route = (props: { 
+	path: IPath, 
+	iconPos: number | null, 
+	active: boolean, 
+	isDropOff?: boolean, 
+}) => {
 	const [route, setRoute] = useState<null | IRoute>(null);
 	const routeLengthMap = useMemo(() => routeLengths(route), [route]);
 
+	const [log, setLog] = useState(false);
+	useHotkeys([["space", () => setLog(!log)]])
 	
 	useEffect(() => {
 		fetchRoute(props.path).then(data => {
@@ -64,12 +78,18 @@ const Route = (props: { path: IPath, iconPos: number | null, active: boolean }) 
 			props.iconPos * 100
 		);
 	}
-	const shownRoute = filterRoute(route, routeLengthMap, props.iconPos);
+
+	if (log) {
+		console.log(coord, route);
+	}
+
+	const shownRoute = props.iconPos ? filterRoute(route, routeLengthMap, props.iconPos) : [];
 
 	return (
 		<>
 			{coord ? <Marker position={coord} icon={LCarIcon()} /> : null}
-			{route ? <Polyline positions={shownRoute} color={"#bca0bd"} weight={props.active ? 3:1} opacity={props.active? 1: 0.8}/> : null}
+			<Polyline positions={shownRoute} color={"#bca0bd"} weight={props.active ? 3:1} opacity={props.active? 1: 0.8}/>
+			{props.isDropOff ? <Marker position={route[route.length - 1]} icon={LFlagIcon()} /> : null}
 		</>
 	);
 

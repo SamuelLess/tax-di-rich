@@ -13,15 +13,12 @@ const LCarIcon = () => {
 	return LeafletIcon("/car.svg", [16, 16]);
 };
 
-// const LFlagIcon = () => {
-// 	return LeafletIcon(<FlagCheckered size={32} color="#000000" weight="fill" />, [5, 28]);
-// }
+const LFlagIcon = () => {
+	return LeafletIcon("/flag-checkered.svg", [5, 28]);
+}
 
 const LCustomerIcon = () => {
 	return LeafletIcon("/user.svg", [16, 16]);
 }
 
-const LCustomerIconRed = () => {
-	return LeafletIcon("/user-red.svg", [16, 16]);
-}
-export { LCarIcon, LCustomerIcon, LCustomerIconRed };
+export { LCarIcon, LFlagIcon, LCustomerIcon };
