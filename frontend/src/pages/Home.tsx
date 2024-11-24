@@ -9,6 +9,9 @@ import ForecastGraph from '@components/ForecastGraph';
 import classNames from "classnames";
 import { CaretDown, CaretLeft, CaretRight, CaretUp, ChartBarHorizontal, Sliders } from "@phosphor-icons/react";
 import { useDisclosure } from '@mantine/hooks';
+import {Util} from "leaflet";
+import formatNum = Util.formatNum;
+import CountUp from "react-countup";
 import { BarChart } from '@mantine/charts';
 import {StatsGroup} from "@components/TechnicalDataDisplay";
 import { DonutChart } from '@mantine/charts';
@@ -89,12 +92,12 @@ const Parameters = (props: {optimzationGoals?: OptimizationGoals, sendCoefficien
         <Stack>
 
     <Group>
-    
+
       <Text style={{width: "5rem"}}>Wait time:</Text><Text p="5px" lh="1" size='xl' className={styles.numberIndicator}>{Math.round(props.optimzationGoals.speed / 60)} min</Text>
 
     </Group>
     <Group>
-  
+
       <Text style={{width: "5rem"}}>Emissions:</Text><Text p="5px" lh="1" size='xl' className={styles.numberIndicator}>{emmissions_kg} kg  CO<sub>2</sub></Text>
       </Group>
     </Stack>
@@ -123,7 +126,7 @@ interface Status{
   vehiclesAvailable: number,
   vehiclesMoving: number
 }
-const ScenarioDisplay = (props: { 
+const ScenarioDisplay = (props: {
   state: Scenario, 
   times: { [key: string]: number }
   status: Object,
@@ -133,7 +136,6 @@ const ScenarioDisplay = (props: {
   
   const [statOpened, { toggle: toggleStat }] = useDisclosure(false);
   const [paramOpened, { toggle: toggleParam }] = useDisclosure(false);
-  //const [fore]
 
   const statusCol = (() => {
     switch (props.state.status) {
@@ -182,14 +184,23 @@ const ScenarioDisplay = (props: {
           </Stack>
           <Group>
             <Stack className={styles.shadowbox} p={15} flex={1}>
-              <Text size='20px' my={10}>Graph</Text>
-              <ForecastGraph forecast = {props.forecast} />
+              <Text size='20px' mt={10}>Total Distance</Text>
+              <Center my={5}>
+                <Text className={"font-weight-bold"} size='32px' m={30}>
+                  <CountUp end={props.status['totalDistance']/1000} duration={1.5} decimals={2} suffix="km" />
+                </Text>
+              </Center>
             </Stack>
             <Stack className={styles.shadowbox} p={15} flex={1}>
-              <Text size='20px' my={10}>Graph</Text>
-              <ForecastGraph forecast = {props.forecast}></ForecastGraph>
+              <Text size='20px' mt={10}>Customers Arrived</Text>
+              <Center my={5}>
+                <Text className={"font-weight-bold"} size='32px' m={30}>
+                  <CountUp redraw={false} end={(props.status['totalCustomers'] - props.status['customersWaiting'])/props.status['totalCustomers']*100} duration={1.5} decimals={2} suffix="%" />
+                </Text>
+              </Center>
             </Stack>
           </Group>
+
           <Group>
             <Stack className={styles.shadowbox} p={15} flex={1}>
               <Text size='20px' my={10}>Taxi</Text>
@@ -309,7 +320,7 @@ const Home = () => {
         times={startRemainingTimes}
         status={status}
         forecast={forecast!}
-        parametersPanel={ <Parameters 
+        parametersPanel={ <Parameters
           optimzationGoals={optimizationGoals}
           sendCoefficient = {sendCoefficient}
           /> }

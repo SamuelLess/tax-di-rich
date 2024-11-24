@@ -19,7 +19,7 @@ const Map = ({ scenarioState, startRemainingTimes, radius }: {
 	// filter out assigned customers
 	customersToDo = customersToDo.filter(customer => !assignedCustomers.has(customer.id));
 	return (
-		<MapContainer  center={MUNICH_LATLONG} zoom={12} scrollWheelZoom={true} style={{ height: "100%", width: "100%", borderRadius: radius }}>
+		<MapContainer  center={MUNICH_LATLONG} zoom={13} scrollWheelZoom={true} style={{ height: "100%", width: "100%", borderRadius: radius }}>
 			<TileLayer
 				attribution='&copy; <a href="https://carto.com/">Carto</a>'
 				url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
